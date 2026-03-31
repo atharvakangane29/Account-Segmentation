@@ -1,0 +1,1185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BI Platform - Setup & Onboarding</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script> window.FontAwesomeConfig = { autoReplaceSvg: 'nest'};</script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        brand: {
+                            bg: '#EEE9DF',
+                            border: '#C9C1B1',
+                            textPrimary: '#2C3B4D',
+                            dark: '#1B2632',
+                            primary: '#FFB162',
+                            critical: '#A35139',
+                            textSecondary: '#4A6B8A',
+                            lowSev: '#7FA3C0',
+                            tableBorder: '#D8D0C4',
+                            cardBg: '#F7F4EF'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .step-dot { transition: all 0.3s ease; }
+        .connector-line { transition: background 0.5s ease; }
+
+        /* Source card states */
+        .source-card { transition: all 0.25s ease; cursor: pointer; }
+        .source-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.08); }
+        .source-card.connected { border-color: #7FA3C0; background: linear-gradient(135deg, #F7F4EF, #EEF3F7); }
+        .source-card.connecting { border-color: #FFB162; animation: pulse-border 1.2s infinite; }
+        .source-card.error { border-color: #A35139; }
+
+        @keyframes pulse-border {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(255,177,98,0.4); }
+            50% { box-shadow: 0 0 0 6px rgba(255,177,98,0); }
+        }
+
+        /* Training animation */
+        .training-bar { transition: width 0.4s ease; }
+
+        .log-entry { animation: fadeInUp 0.3s ease forwards; opacity: 0; }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Hyperparameter slider */
+        .hp-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 16px; width: 16px;
+            border-radius: 50%;
+            background: #FFB162;
+            cursor: pointer;
+            margin-top: -6px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+        }
+        .hp-slider::-webkit-slider-runnable-track {
+            width: 100%; height: 4px;
+            background: #C9C1B1; border-radius: 2px; cursor: pointer;
+        }
+        .hp-slider { -webkit-appearance: none; appearance: none; background: transparent; width: 100%; }
+
+        /* Expandable table list */
+        .table-list { max-height: 0; overflow: hidden; transition: max-height 0.35s ease; }
+        .table-list.open { max-height: 400px; }
+
+        /* Completion pulse */
+        @keyframes success-ring {
+            0% { box-shadow: 0 0 0 0 rgba(127,163,192,0.6); }
+            100% { box-shadow: 0 0 0 20px rgba(127,163,192,0); }
+        }
+        .success-ring { animation: success-ring 0.8s ease-out; }
+    </style>
+</head>
+<body class="w-full min-h-screen m-0 flex flex-col overflow-x-hidden text-brand-textPrimary bg-brand-bg">
+
+    <!-- Header -->
+    <header class="bg-brand-dark border-b border-brand-border h-16 flex items-center justify-between px-6 lg:px-10">
+        <div class="flex items-center gap-2">
+            <img src="assets/img/logo.png" alt="PharmaBI Logo" class="w-8 h-8" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+            <div class="w-8 h-8 bg-brand-primary rounded-md items-center justify-center hidden">
+                <i class="fa-solid fa-chart-pie text-brand-dark text-sm"></i>
+            </div>
+            <span class="text-white text-xl font-bold tracking-tight">Account Segmentation</span>
+        </div>
+        <div class="flex items-center gap-3 text-sm text-brand-textSecondary">
+            <i class="fa-solid fa-shield-halved text-brand-primary"></i>
+            <span>Secure Setup — All data processed on-premise</span>
+        </div>
+    </header>
+
+    <!-- Main -->
+    <main class="flex-1 w-full max-w-[1100px] mx-auto px-4 sm:px-6 lg:px-8 py-10 flex flex-col gap-8">
+
+        <!-- Progress Stepper -->
+        <div id="stepper" class="flex items-center justify-center gap-0">
+            <!-- Step 1 -->
+            <div class="flex flex-col items-center" id="step1-dot-wrap">
+                <div id="step1-dot" class="step-dot w-10 h-10 rounded-full bg-brand-primary text-brand-dark flex items-center justify-center font-bold shadow-sm border-4 border-brand-cardBg ring-4 ring-brand-primary/20">1</div>
+                <span class="text-xs font-semibold text-brand-primary mt-2 whitespace-nowrap">Connect Sources</span>
+            </div>
+            <div class="h-0.5 w-20 sm:w-32 bg-brand-border mx-1 mb-4 connector-line" id="conn-1-2"></div>
+            <!-- Step 2 -->
+            <div class="flex flex-col items-center" id="step2-dot-wrap">
+                <div id="step2-dot" class="step-dot w-10 h-10 rounded-full bg-brand-bg text-brand-textSecondary flex items-center justify-center font-bold border-2 border-brand-border shadow-sm">2</div>
+                <span class="text-xs font-medium text-brand-textSecondary mt-2 whitespace-nowrap">Model Parameters</span>
+            </div>
+            <div class="h-0.5 w-20 sm:w-32 bg-brand-border mx-1 mb-4 connector-line" id="conn-2-3"></div>
+            <!-- Step 3 -->
+            <div class="flex flex-col items-center" id="step3-dot-wrap">
+                <div id="step3-dot" class="step-dot w-10 h-10 rounded-full bg-brand-bg text-brand-textSecondary flex items-center justify-center font-bold border-2 border-brand-border shadow-sm">3</div>
+                <span class="text-xs font-medium text-brand-textSecondary mt-2 whitespace-nowrap">Model Training</span>
+            </div>
+            <div class="h-0.5 w-20 sm:w-32 bg-brand-border mx-1 mb-4 connector-line" id="conn-3-4"></div>
+            <!-- Step 4 -->
+            <div class="flex flex-col items-center" id="step4-dot-wrap">
+                <div id="step4-dot" class="step-dot w-10 h-10 rounded-full bg-brand-bg text-brand-textSecondary flex items-center justify-center font-bold border-2 border-brand-border shadow-sm">4</div>
+                <span class="text-xs font-medium text-brand-textSecondary mt-2 whitespace-nowrap">Ready</span>
+            </div>
+        </div>
+
+        <!-- ===================== STEP 1: CONNECT DATA SOURCES ===================== -->
+        <div id="panel-step1" class="flex flex-col gap-6">
+            <div class="text-center">
+                <h1 class="text-2xl font-bold text-brand-textPrimary">Connect Your Data Sources</h1>
+                <p class="text-sm text-brand-textSecondary mt-1">Select your primary data providers and configure the tables the segmentation model will ingest.</p>
+            </div>
+
+            <!-- Provider Cards Row -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-5" id="provider-grid">
+
+                <!-- VEEVA -->
+                <div class="bg-brand-cardBg rounded-xl border border-brand-border shadow-sm overflow-hidden" id="provider-veeva">
+                    <div class="p-5 border-b border-brand-tableBorder flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-lg bg-brand-dark flex items-center justify-center shadow-sm">
+                                <i class="fa-solid fa-v text-brand-primary text-lg font-black"></i>
+                            </div>
+                            <div>
+                                <p class="font-bold text-brand-textPrimary text-sm">Veeva Systems</p>
+                                <p class="text-xs text-brand-textSecondary">Vault CRM & Data Cloud</p>
+                            </div>
+                        </div>
+                        <span id="veeva-status" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-brand-bg border border-brand-border text-brand-textSecondary">
+                            <span class="w-1.5 h-1.5 rounded-full bg-brand-border"></span> Not Connected
+                        </span>
+                    </div>
+
+                    <!-- Credentials -->
+                    <div class="p-5 space-y-3" id="veeva-creds">
+                        <div>
+                            <label class="text-xs font-medium text-brand-textSecondary block mb-1">Vault URL</label>
+                            <input type="text" placeholder="https://company.veevavault.com" value="https://pharmaBI.veevavault.com"
+                                class="w-full px-3 py-2 text-sm border border-brand-border rounded-lg bg-white text-brand-textPrimary focus:ring-1 focus:ring-brand-primary focus:border-brand-primary">
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="text-xs font-medium text-brand-textSecondary block mb-1">Username</label>
+                                <input type="text" placeholder="admin@company.com" value="bi_service@pharma.com"
+                                    class="w-full px-3 py-2 text-sm border border-brand-border rounded-lg bg-white text-brand-textPrimary focus:ring-1 focus:ring-brand-primary">
+                            </div>
+                            <div>
+                                <label class="text-xs font-medium text-brand-textSecondary block mb-1">API Key</label>
+                                <input type="password" placeholder="••••••••" value="vv_api_k3y_d3mo"
+                                    class="w-full px-3 py-2 text-sm border border-brand-border rounded-lg bg-white text-brand-textPrimary focus:ring-1 focus:ring-brand-primary">
+                            </div>
+                        </div>
+                        <button onclick="connectProvider('veeva')"
+                            class="w-full py-2 bg-brand-primary text-brand-dark rounded-lg text-sm font-semibold hover:bg-brand-primary/90 transition-colors shadow-sm">
+                            Connect Veeva
+                        </button>
+                    </div>
+
+                    <!-- Tables (shown after connect) -->
+                    <div id="veeva-tables" class="hidden px-5 pb-5">
+                        <p class="text-xs font-bold text-brand-textSecondary uppercase tracking-wider mb-3 flex items-center gap-2">
+                            <i class="fa-solid fa-table text-brand-primary"></i> Available Tables
+                            <span class="ml-auto text-brand-primary font-normal normal-case">5 of 5 selected</span>
+                        </p>
+                        <div class="space-y-1.5" id="veeva-table-list">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- DATABRICKS -->
+                <div class="bg-brand-cardBg rounded-xl border border-brand-border shadow-sm overflow-hidden" id="provider-databricks">
+                    <div class="p-5 border-b border-brand-tableBorder flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-lg bg-[#FF3621]/10 border border-[#FF3621]/20 flex items-center justify-center shadow-sm">
+                                <i class="fa-solid fa-database text-[#FF3621] text-sm"></i>
+                            </div>
+                            <div>
+                                <p class="font-bold text-brand-textPrimary text-sm">Databricks</p>
+                                <p class="text-xs text-brand-textSecondary">Delta Lake / Unity Catalog</p>
+                            </div>
+                        </div>
+                        <span id="databricks-status" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-brand-bg border border-brand-border text-brand-textSecondary">
+                            <span class="w-1.5 h-1.5 rounded-full bg-brand-border"></span> Not Connected
+                        </span>
+                    </div>
+
+                    <div class="p-5 space-y-3" id="databricks-creds">
+                        <div>
+                            <label class="text-xs font-medium text-brand-textSecondary block mb-1">Workspace URL</label>
+                            <input type="text" placeholder="https://adb-xxxx.azuredatabricks.net" value="https://adb-8821034.azuredatabricks.net"
+                                class="w-full px-3 py-2 text-sm border border-brand-border rounded-lg bg-white text-brand-textPrimary focus:ring-1 focus:ring-brand-primary">
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="text-xs font-medium text-brand-textSecondary block mb-1">Catalog</label>
+                                <input type="text" placeholder="main" value="pharma_prod"
+                                    class="w-full px-3 py-2 text-sm border border-brand-border rounded-lg bg-white text-brand-textPrimary focus:ring-1 focus:ring-brand-primary">
+                            </div>
+                            <div>
+                                <label class="text-xs font-medium text-brand-textSecondary block mb-1">Access Token</label>
+                                <input type="password" placeholder="dapi••••••••" value="dapi_d3mo_t0k3n"
+                                    class="w-full px-3 py-2 text-sm border border-brand-border rounded-lg bg-white text-brand-textPrimary focus:ring-1 focus:ring-brand-primary">
+                            </div>
+                        </div>
+                        <button onclick="connectProvider('databricks')"
+                            class="w-full py-2 bg-[#FF3621]/10 text-[#FF3621] border border-[#FF3621]/30 rounded-lg text-sm font-semibold hover:bg-[#FF3621]/20 transition-colors shadow-sm">
+                            Connect Databricks
+                        </button>
+                    </div>
+
+                    <div id="databricks-tables" class="hidden px-5 pb-5">
+                        <p class="text-xs font-bold text-brand-textSecondary uppercase tracking-wider mb-3 flex items-center gap-2">
+                            <i class="fa-solid fa-table text-[#FF3621]"></i> Delta Tables — pharma_prod
+                            <span class="ml-auto text-[#FF3621] font-normal normal-case">6 of 6 selected</span>
+                        </p>
+                        <div class="space-y-1.5" id="databricks-table-list"></div>
+                    </div>
+                </div>
+
+                <!-- SQL / IQVIA -->
+                <div class="bg-brand-cardBg rounded-xl border border-brand-border shadow-sm overflow-hidden" id="provider-sql">
+                    <div class="p-5 border-b border-brand-tableBorder flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-lg bg-brand-lowSev/10 border border-brand-lowSev/20 flex items-center justify-center shadow-sm">
+                                <i class="fa-solid fa-server text-brand-lowSev text-sm"></i>
+                            </div>
+                            <div>
+                                <p class="font-bold text-brand-textPrimary text-sm">SQL / IQVIA</p>
+                                <p class="text-xs text-brand-textSecondary">IQVIA Claims · Symphony Health · Custom SQL</p>
+                            </div>
+                        </div>
+                        <span id="sql-status" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-brand-bg border border-brand-border text-brand-textSecondary">
+                            <span class="w-1.5 h-1.5 rounded-full bg-brand-border"></span> Not Connected
+                        </span>
+                    </div>
+
+                    <div class="p-5 space-y-3" id="sql-creds">
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="text-xs font-medium text-brand-textSecondary block mb-1">Host</label>
+                                <input type="text" placeholder="sql.iqvia.com" value="sql.iqvia-cloud.com"
+                                    class="w-full px-3 py-2 text-sm border border-brand-border rounded-lg bg-white text-brand-textPrimary focus:ring-1 focus:ring-brand-primary">
+                            </div>
+                            <div>
+                                <label class="text-xs font-medium text-brand-textSecondary block mb-1">Database</label>
+                                <input type="text" placeholder="iqvia_claims" value="iqvia_pharma_rx"
+                                    class="w-full px-3 py-2 text-sm border border-brand-border rounded-lg bg-white text-brand-textPrimary focus:ring-1 focus:ring-brand-primary">
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="text-xs font-medium text-brand-textSecondary block mb-1">Username</label>
+                                <input type="text" placeholder="readonly_user" value="bi_reader"
+                                    class="w-full px-3 py-2 text-sm border border-brand-border rounded-lg bg-white text-brand-textPrimary focus:ring-1 focus:ring-brand-primary">
+                            </div>
+                            <div>
+                                <label class="text-xs font-medium text-brand-textSecondary block mb-1">Password</label>
+                                <input type="password" placeholder="••••••••" value="sql_d3mo_pw"
+                                    class="w-full px-3 py-2 text-sm border border-brand-border rounded-lg bg-white text-brand-textPrimary focus:ring-1 focus:ring-brand-primary">
+                            </div>
+                        </div>
+                        <button onclick="connectProvider('sql')"
+                            class="w-full py-2 bg-brand-lowSev/10 text-brand-lowSev border border-brand-lowSev/30 rounded-lg text-sm font-semibold hover:bg-brand-lowSev/20 transition-colors shadow-sm">
+                            Connect SQL / IQVIA
+                        </button>
+                    </div>
+
+                    <div id="sql-tables" class="hidden px-5 pb-5">
+                        <p class="text-xs font-bold text-brand-textSecondary uppercase tracking-wider mb-3 flex items-center gap-2">
+                            <i class="fa-solid fa-table text-brand-lowSev"></i> Available Views
+                            <span class="ml-auto text-brand-lowSev font-normal normal-case">4 of 4 selected</span>
+                        </p>
+                        <div class="space-y-1.5" id="sql-table-list"></div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Data Source Summary (shown after all 3 connected) -->
+            <div id="source-summary" class="hidden bg-brand-cardBg rounded-xl border border-brand-border shadow-sm p-5">
+                <h3 class="text-sm font-bold text-brand-textPrimary mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-layer-group text-brand-primary"></i>
+                    Data Sources Mapped to Model Inputs
+                </h3>
+                <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
+                    <div class="p-3 rounded-lg bg-brand-bg border border-brand-tableBorder text-center">
+                        <div class="w-8 h-8 rounded-full bg-brand-primary/20 flex items-center justify-center mx-auto mb-2">
+                            <i class="fa-solid fa-file-prescription text-brand-primary text-xs"></i>
+                        </div>
+                        <p class="text-xs font-semibold text-brand-textPrimary">Prescription Claims</p>
+                        <p class="text-xs text-brand-textSecondary mt-0.5">Volume · Market Share</p>
+                        <p class="text-xs text-brand-primary mt-1 font-medium">IQVIA SQL</p>
+                    </div>
+                    <div class="p-3 rounded-lg bg-brand-bg border border-brand-tableBorder text-center">
+                        <div class="w-8 h-8 rounded-full bg-brand-lowSev/20 flex items-center justify-center mx-auto mb-2">
+                            <i class="fa-solid fa-hospital text-brand-lowSev text-xs"></i>
+                        </div>
+                        <p class="text-xs font-semibold text-brand-textPrimary">Hospital Accounts</p>
+                        <p class="text-xs text-brand-textSecondary mt-0.5">Size · Beds · Specialties</p>
+                        <p class="text-xs text-brand-lowSev mt-1 font-medium">Veeva Vault</p>
+                    </div>
+                    <div class="p-3 rounded-lg bg-brand-bg border border-brand-tableBorder text-center">
+                        <div class="w-8 h-8 rounded-full bg-brand-textSecondary/20 flex items-center justify-center mx-auto mb-2">
+                            <i class="fa-solid fa-user-doctor text-brand-textSecondary text-xs"></i>
+                        </div>
+                        <p class="text-xs font-semibold text-brand-textPrimary">HCP Network</p>
+                        <p class="text-xs text-brand-textSecondary mt-0.5">Specialty · Affiliation</p>
+                        <p class="text-xs text-brand-textSecondary mt-1 font-medium">Veeva CRM</p>
+                    </div>
+                    <div class="p-3 rounded-lg bg-brand-bg border border-brand-tableBorder text-center">
+                        <div class="w-8 h-8 rounded-full bg-brand-critical/10 flex items-center justify-center mx-auto mb-2">
+                            <i class="fa-solid fa-globe text-brand-critical text-xs"></i>
+                        </div>
+                        <p class="text-xs font-semibold text-brand-textPrimary">Digital Engagement</p>
+                        <p class="text-xs text-brand-textSecondary mt-0.5">Email · Web · Events</p>
+                        <p class="text-xs text-brand-critical mt-1 font-medium">Databricks</p>
+                    </div>
+                    <div class="p-3 rounded-lg bg-brand-bg border border-brand-tableBorder text-center">
+                        <div class="w-8 h-8 rounded-full bg-brand-primary/10 flex items-center justify-center mx-auto mb-2">
+                            <i class="fa-solid fa-route text-brand-primary text-xs"></i>
+                        </div>
+                        <p class="text-xs font-semibold text-brand-textPrimary">Geography & Territory</p>
+                        <p class="text-xs text-brand-textSecondary mt-0.5">Region · Territory</p>
+                        <p class="text-xs text-brand-primary mt-1 font-medium">Databricks</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Connection status bar -->
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-4 text-sm text-brand-textSecondary">
+                    <span id="connected-count" class="font-medium text-brand-textPrimary">0 of 3</span> providers connected
+                    <span id="table-count" class="hidden text-brand-primary font-medium">· 15 tables selected</span>
+                </div>
+                <button id="btn-step1-next" onclick="goToStep(2)"
+                    class="px-6 py-2.5 bg-brand-primary text-brand-dark rounded-lg text-sm font-bold hover:bg-brand-primary/90 transition-colors shadow-sm opacity-40 cursor-not-allowed flex items-center gap-2" disabled>
+                    Configure Model <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- ===================== STEP 2: HYPERPARAMETERS ===================== -->
+        <div id="panel-step2" class="hidden flex-col gap-6">
+            <div class="text-center">
+                <h1 class="text-2xl font-bold text-brand-textPrimary">Model Configuration</h1>
+                <p class="text-sm text-brand-textSecondary mt-1">Configure the ensemble model parameters. Defaults are pre-tuned for pharma account segmentation.</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+
+                <!-- Left: Hyperparameters -->
+                <div class="lg:col-span-2 flex flex-col gap-4">
+
+                    <!-- Model Selection -->
+                    <div class="bg-brand-cardBg rounded-xl border border-brand-border shadow-sm p-5">
+                        <h3 class="text-sm font-bold text-brand-textPrimary mb-4 flex items-center gap-2">
+                            <i class="fa-solid fa-microchip text-brand-primary"></i> Ensemble Model Type
+                        </h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                            <label class="relative flex flex-col p-4 border border-brand-primary bg-brand-primary/5 rounded-lg cursor-pointer">
+                                <input type="radio" name="model_type" value="xgboost_glmm" class="sr-only" checked>
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-sm font-bold text-brand-textPrimary">XGBoost + GLMM</span>
+                                    <i class="fa-solid fa-circle-check text-brand-primary text-xs"></i>
+                                </div>
+                                <span class="text-xs text-brand-textSecondary">Best for mixed data types. Recommended for pharma account data.</span>
+                                <span class="mt-2 text-xs font-medium text-brand-primary">⭐ Recommended</span>
+                            </label>
+                            <label class="relative flex flex-col p-4 border border-brand-border bg-white rounded-lg cursor-pointer hover:border-brand-primary/50 transition-colors">
+                                <input type="radio" name="model_type" value="random_forest" class="sr-only">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-sm font-bold text-brand-textPrimary">Random Forest</span>
+                                </div>
+                                <span class="text-xs text-brand-textSecondary">High interpretability. Good for smaller datasets (&lt;500 accounts).</span>
+                            </label>
+                            <label class="relative flex flex-col p-4 border border-brand-border bg-white rounded-lg cursor-pointer hover:border-brand-primary/50 transition-colors">
+                                <input type="radio" name="model_type" value="kmeans_hybrid" class="sr-only">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-sm font-bold text-brand-textPrimary">K-Means Hybrid</span>
+                                </div>
+                                <span class="text-xs text-brand-textSecondary">Unsupervised clustering. Use when segment labels are unknown.</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Hyperparameter Sliders -->
+                    <div class="bg-brand-cardBg rounded-xl border border-brand-border shadow-sm p-5">
+                        <div class="flex items-center justify-between mb-5">
+                            <h3 class="text-sm font-bold text-brand-textPrimary flex items-center gap-2">
+                                <i class="fa-solid fa-sliders text-brand-primary"></i> Hyperparameters
+                            </h3>
+                            <button onclick="resetHyperparams()" class="text-xs text-brand-textSecondary hover:text-brand-primary font-medium transition-colors">
+                                <i class="fa-solid fa-rotate-left mr-1"></i> Reset Defaults
+                            </button>
+                        </div>
+
+                        <div class="space-y-5">
+                            <!-- n_estimators -->
+                            <div>
+                                <div class="flex justify-between text-sm mb-1.5">
+                                    <div>
+                                        <span class="font-medium text-brand-textPrimary">Number of Estimators</span>
+                                        <span class="text-xs text-brand-textSecondary ml-2">(n_estimators)</span>
+                                    </div>
+                                    <span class="font-mono text-brand-primary font-bold" id="hp-estimators-val">300</span>
+                                </div>
+                                <input type="range" min="50" max="1000" value="300" step="50" class="hp-slider w-full" id="hp-estimators"
+                                    oninput="document.getElementById('hp-estimators-val').textContent = this.value">
+                                <div class="flex justify-between text-xs text-brand-textSecondary mt-1">
+                                    <span>50 (fast, less accurate)</span><span>1000 (slow, more accurate)</span>
+                                </div>
+                            </div>
+
+                            <!-- max_depth -->
+                            <div>
+                                <div class="flex justify-between text-sm mb-1.5">
+                                    <div>
+                                        <span class="font-medium text-brand-textPrimary">Max Tree Depth</span>
+                                        <span class="text-xs text-brand-textSecondary ml-2">(max_depth)</span>
+                                    </div>
+                                    <span class="font-mono text-brand-primary font-bold" id="hp-depth-val">6</span>
+                                </div>
+                                <input type="range" min="2" max="12" value="6" step="1" class="hp-slider w-full" id="hp-depth"
+                                    oninput="document.getElementById('hp-depth-val').textContent = this.value">
+                                <div class="flex justify-between text-xs text-brand-textSecondary mt-1">
+                                    <span>2 (underfitting risk)</span><span>12 (overfitting risk)</span>
+                                </div>
+                            </div>
+
+                            <!-- learning_rate -->
+                            <div>
+                                <div class="flex justify-between text-sm mb-1.5">
+                                    <div>
+                                        <span class="font-medium text-brand-textPrimary">Learning Rate</span>
+                                        <span class="text-xs text-brand-textSecondary ml-2">(eta)</span>
+                                    </div>
+                                    <span class="font-mono text-brand-primary font-bold" id="hp-lr-val">0.10</span>
+                                </div>
+                                <input type="range" min="1" max="30" value="10" step="1" class="hp-slider w-full" id="hp-lr"
+                                    oninput="document.getElementById('hp-lr-val').textContent = '0.' + (this.value < 10 ? '0' + this.value : this.value)">
+                                <div class="flex justify-between text-xs text-brand-textSecondary mt-1">
+                                    <span>0.01 (conservative)</span><span>0.30 (aggressive)</span>
+                                </div>
+                            </div>
+
+                            <!-- train/test split -->
+                            <div>
+                                <div class="flex justify-between text-sm mb-1.5">
+                                    <div>
+                                        <span class="font-medium text-brand-textPrimary">Train / Test Split</span>
+                                        <span class="text-xs text-brand-textSecondary ml-2">(test_size)</span>
+                                    </div>
+                                    <span class="font-mono text-brand-primary font-bold" id="hp-split-val">80 / 20</span>
+                                </div>
+                                <input type="range" min="60" max="90" value="80" step="5" class="hp-slider w-full" id="hp-split"
+                                    oninput="document.getElementById('hp-split-val').textContent = this.value + ' / ' + (100 - this.value)">
+                                <div class="flex justify-between text-xs text-brand-textSecondary mt-1">
+                                    <span>60/40</span><span>90/10</span>
+                                </div>
+                            </div>
+
+                            <!-- min_samples_leaf -->
+                            <div>
+                                <div class="flex justify-between text-sm mb-1.5">
+                                    <div>
+                                        <span class="font-medium text-brand-textPrimary">Min Samples Leaf</span>
+                                        <span class="text-xs text-brand-textSecondary ml-2">(min_child_weight)</span>
+                                    </div>
+                                    <span class="font-mono text-brand-primary font-bold" id="hp-leaf-val">5</span>
+                                </div>
+                                <input type="range" min="1" max="20" value="5" step="1" class="hp-slider w-full" id="hp-leaf"
+                                    oninput="document.getElementById('hp-leaf-val').textContent = this.value">
+                                <div class="flex justify-between text-xs text-brand-textSecondary mt-1">
+                                    <span>1 (more splits)</span><span>20 (smoother)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Segment Threshold Config -->
+                    <div class="bg-brand-cardBg rounded-xl border border-brand-border shadow-sm p-5">
+                        <h3 class="text-sm font-bold text-brand-textPrimary mb-4 flex items-center gap-2">
+                            <i class="fa-solid fa-layer-group text-brand-primary"></i> Segment Classification Thresholds
+                        </h3>
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                            <div class="border border-brand-border rounded-lg p-3 relative overflow-hidden bg-white/50">
+                                <div class="absolute top-0 left-0 w-1 h-full bg-[#10b981]"></div>
+                                <p class="text-xs font-semibold text-brand-textPrimary mb-2 flex items-center gap-1.5">
+                                    <span class="w-2 h-2 rounded-full bg-[#10b981]"></span> Growth
+                                </p>
+                                <div class="flex items-center gap-1 text-xs">
+                                    <input type="number" value="85" class="w-14 px-2 py-1 border border-brand-border rounded text-center bg-white text-brand-textPrimary text-xs focus:ring-brand-primary focus:border-brand-primary">
+                                    <span class="text-brand-textSecondary">–</span>
+                                    <span class="text-brand-textSecondary font-medium">100</span>
+                                </div>
+                            </div>
+                            <div class="border border-brand-border rounded-lg p-3 relative overflow-hidden bg-white/50">
+                                <div class="absolute top-0 left-0 w-1 h-full bg-[#8b5cf6]"></div>
+                                <p class="text-xs font-semibold text-brand-textPrimary mb-2 flex items-center gap-1.5">
+                                    <span class="w-2 h-2 rounded-full bg-[#8b5cf6]"></span> Strategic
+                                </p>
+                                <div class="flex items-center gap-1 text-xs">
+                                    <input type="number" value="70" class="w-14 px-2 py-1 border border-brand-border rounded text-center bg-white text-brand-textPrimary text-xs focus:ring-brand-primary focus:border-brand-primary">
+                                    <span class="text-brand-textSecondary">–</span>
+                                    <input type="number" value="84" class="w-14 px-2 py-1 border border-brand-border rounded text-center bg-white text-brand-textPrimary text-xs focus:ring-brand-primary focus:border-brand-primary">
+                                </div>
+                            </div>
+                            <div class="border border-brand-border rounded-lg p-3 relative overflow-hidden bg-white/50">
+                                <div class="absolute top-0 left-0 w-1 h-full bg-[#f59e0b]"></div>
+                                <p class="text-xs font-semibold text-brand-textPrimary mb-2 flex items-center gap-1.5">
+                                    <span class="w-2 h-2 rounded-full bg-[#f59e0b]"></span> Opportunity
+                                </p>
+                                <div class="flex items-center gap-1 text-xs">
+                                    <input type="number" value="50" class="w-14 px-2 py-1 border border-brand-border rounded text-center bg-white text-brand-textPrimary text-xs focus:ring-brand-primary focus:border-brand-primary">
+                                    <span class="text-brand-textSecondary">–</span>
+                                    <input type="number" value="69" class="w-14 px-2 py-1 border border-brand-border rounded text-center bg-white text-brand-textPrimary text-xs focus:ring-brand-primary focus:border-brand-primary">
+                                </div>
+                            </div>
+                            <div class="border border-brand-border rounded-lg p-3 relative overflow-hidden bg-white/50">
+                                <div class="absolute top-0 left-0 w-1 h-full bg-[#A35139]"></div>
+                                <p class="text-xs font-semibold text-brand-textPrimary mb-2 flex items-center gap-1.5">
+                                    <span class="w-2 h-2 rounded-full bg-[#A35139]"></span> At-Risk
+                                </p>
+                                <div class="flex items-center gap-1 text-xs">
+                                    <span class="text-brand-textSecondary font-medium">0</span>
+                                    <span class="text-brand-textSecondary">–</span>
+                                    <input type="number" value="49" class="w-14 px-2 py-1 border border-brand-border rounded text-center bg-white text-brand-textPrimary text-xs focus:ring-brand-primary focus:border-brand-primary">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Feature Weights -->
+                <div class="flex flex-col gap-4">
+                    <div class="bg-brand-cardBg rounded-xl border border-brand-border shadow-sm p-5 flex-1">
+                        <h3 class="text-sm font-bold text-brand-textPrimary mb-1 flex items-center gap-2">
+                            <i class="fa-solid fa-weight-hanging text-brand-primary"></i> Feature Weights
+                        </h3>
+                        <p class="text-xs text-brand-textSecondary mb-4">Define how each data source contributes to the composite score. Must total 100%.</p>
+
+                        <div class="space-y-4">
+                            <div>
+                                <div class="flex justify-between text-sm mb-1"><span class="font-medium text-brand-textPrimary">Revenue / ARR</span><span class="font-mono text-brand-textSecondary" id="fw-rev-val">30%</span></div>
+                                <input type="range" min="0" max="60" value="30" class="hp-slider w-full" id="fw-rev" oninput="updateFW()">
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-sm mb-1"><span class="font-medium text-brand-textPrimary">Rx Volume Growth</span><span class="font-mono text-brand-textSecondary" id="fw-rx-val">25%</span></div>
+                                <input type="range" min="0" max="60" value="25" class="hp-slider w-full" id="fw-rx" oninput="updateFW()">
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-sm mb-1"><span class="font-medium text-brand-textPrimary">Loyalty / Tenure</span><span class="font-mono text-brand-textSecondary" id="fw-loyalty-val">20%</span></div>
+                                <input type="range" min="0" max="60" value="20" class="hp-slider w-full" id="fw-loyalty" oninput="updateFW()">
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-sm mb-1"><span class="font-medium text-brand-textPrimary">Digital Affinity</span><span class="font-mono text-brand-textSecondary" id="fw-digital-val">15%</span></div>
+                                <input type="range" min="0" max="60" value="15" class="hp-slider w-full" id="fw-digital" oninput="updateFW()">
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-sm mb-1"><span class="font-medium text-brand-textPrimary">Geographic Score</span><span class="font-mono text-brand-textSecondary" id="fw-geo-val">10%</span></div>
+                                <input type="range" min="0" max="60" value="10" class="hp-slider w-full" id="fw-geo" oninput="updateFW()">
+                            </div>
+
+                            <div class="pt-3 border-t border-brand-tableBorder">
+                                <div class="flex justify-between text-xs text-brand-textSecondary mb-1.5">
+                                    <span>Total Weight</span>
+                                    <span id="fw-total" class="font-mono font-bold text-[#10b981]">100%</span>
+                                </div>
+                                <div class="w-full h-2 bg-brand-bg rounded-full flex overflow-hidden">
+                                    <div id="fw-bar-rev" class="h-full bg-brand-primary transition-all" style="width:30%"></div>
+                                    <div id="fw-bar-rx" class="h-full bg-brand-lowSev transition-all" style="width:25%"></div>
+                                    <div id="fw-bar-loyalty" class="h-full bg-brand-textSecondary transition-all" style="width:20%"></div>
+                                    <div id="fw-bar-digital" class="h-full bg-brand-critical transition-all" style="width:15%"></div>
+                                    <div id="fw-bar-geo" class="h-full bg-[#10b981] transition-all" style="width:10%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Cross-validation -->
+                    <div class="bg-brand-cardBg rounded-xl border border-brand-border shadow-sm p-4">
+                        <h3 class="text-xs font-bold text-brand-textPrimary mb-3 flex items-center gap-2">
+                            <i class="fa-solid fa-vials text-brand-lowSev text-xs"></i> Validation Strategy
+                        </h3>
+                        <div class="space-y-2">
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="radio" name="cv" value="kfold" class="text-brand-primary" checked>
+                                <span class="text-sm text-brand-textPrimary">5-Fold Cross Validation</span>
+                                <span class="ml-auto text-xs text-brand-textSecondary">Recommended</span>
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="radio" name="cv" value="stratified" class="text-brand-primary">
+                                <span class="text-sm text-brand-textPrimary">Stratified K-Fold</span>
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="radio" name="cv" value="holdout" class="text-brand-primary">
+                                <span class="text-sm text-brand-textPrimary">Holdout Only</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-between items-center">
+                <button onclick="goToStep(1)" class="px-5 py-2.5 bg-brand-cardBg border border-brand-border rounded-lg text-sm font-medium text-brand-textPrimary hover:bg-brand-bg transition-colors flex items-center gap-2">
+                    <i class="fa-solid fa-arrow-left"></i> Back
+                </button>
+                <button onclick="goToStep(3)" class="px-6 py-2.5 bg-brand-primary text-brand-dark rounded-lg text-sm font-bold hover:bg-brand-primary/90 transition-colors shadow-sm flex items-center gap-2">
+                    Begin Training <i class="fa-solid fa-play"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- ===================== STEP 3: TRAINING SCREEN ===================== -->
+        <div id="panel-step3" class="hidden flex-col gap-6 items-center">
+            <div class="text-center">
+                <h1 class="text-2xl font-bold text-brand-textPrimary">Training Your Model</h1>
+                <p class="text-sm text-brand-textSecondary mt-1">The segmentation engine is ingesting your data and building the scoring model.</p>
+            </div>
+
+            <div class="w-full max-w-2xl bg-brand-cardBg rounded-xl border border-brand-border shadow-sm overflow-hidden">
+                <!-- Training Header -->
+                <div class="p-5 bg-brand-dark flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-full bg-brand-primary/20 flex items-center justify-center" id="training-icon-wrap">
+                            <i class="fa-solid fa-microchip text-brand-primary" id="training-icon"></i>
+                        </div>
+                        <div>
+                            <p class="text-white font-semibold text-sm" id="training-phase-label">Initializing...</p>
+                            <p class="text-brand-textSecondary text-xs" id="training-phase-sub">Connecting to data sources</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-brand-primary font-bold font-mono text-lg" id="training-pct">0%</p>
+                        <p class="text-brand-textSecondary text-xs" id="training-eta">Est. ~45s</p>
+                    </div>
+                </div>
+
+                <!-- Progress Bar -->
+                <div class="h-2 bg-brand-bg">
+                    <div id="training-bar" class="training-bar h-full bg-brand-primary rounded-r" style="width:0%"></div>
+                </div>
+
+                <!-- Phase Steps -->
+                <div class="p-5 border-b border-brand-tableBorder">
+                    <div class="space-y-3" id="training-phases">
+                        <div class="training-phase-row flex items-center gap-3" id="phase-ingest">
+                            <div class="w-6 h-6 rounded-full border-2 border-brand-border flex items-center justify-center flex-shrink-0" id="phase-ingest-icon">
+                                <i class="fa-solid fa-circle text-brand-border text-[8px]"></i>
+                            </div>
+                            <span class="text-sm text-brand-textSecondary" id="phase-ingest-label">Data Ingestion & Schema Validation</span>
+                            <span class="ml-auto text-xs text-brand-textSecondary" id="phase-ingest-stat"></span>
+                        </div>
+                        <div class="training-phase-row flex items-center gap-3" id="phase-feature">
+                            <div class="w-6 h-6 rounded-full border-2 border-brand-border flex items-center justify-center flex-shrink-0" id="phase-feature-icon">
+                                <i class="fa-solid fa-circle text-brand-border text-[8px]"></i>
+                            </div>
+                            <span class="text-sm text-brand-textSecondary" id="phase-feature-label">Feature Engineering & Normalization</span>
+                            <span class="ml-auto text-xs text-brand-textSecondary" id="phase-feature-stat"></span>
+                        </div>
+                        <div class="training-phase-row flex items-center gap-3" id="phase-train">
+                            <div class="w-6 h-6 rounded-full border-2 border-brand-border flex items-center justify-center flex-shrink-0" id="phase-train-icon">
+                                <i class="fa-solid fa-circle text-brand-border text-[8px]"></i>
+                            </div>
+                            <span class="text-sm text-brand-textSecondary" id="phase-train-label">XGBoost + GLMM Ensemble Training</span>
+                            <span class="ml-auto text-xs text-brand-textSecondary" id="phase-train-stat"></span>
+                        </div>
+                        <div class="training-phase-row flex items-center gap-3" id="phase-cv">
+                            <div class="w-6 h-6 rounded-full border-2 border-brand-border flex items-center justify-center flex-shrink-0" id="phase-cv-icon">
+                                <i class="fa-solid fa-circle text-brand-border text-[8px]"></i>
+                            </div>
+                            <span class="text-sm text-brand-textSecondary" id="phase-cv-label">Cross-Validation (5-Fold)</span>
+                            <span class="ml-auto text-xs text-brand-textSecondary" id="phase-cv-stat"></span>
+                        </div>
+                        <div class="training-phase-row flex items-center gap-3" id="phase-lime">
+                            <div class="w-6 h-6 rounded-full border-2 border-brand-border flex items-center justify-center flex-shrink-0" id="phase-lime-icon">
+                                <i class="fa-solid fa-circle text-brand-border text-[8px]"></i>
+                            </div>
+                            <span class="text-sm text-brand-textSecondary" id="phase-lime-label">LIME Explainability Index Build</span>
+                            <span class="ml-auto text-xs text-brand-textSecondary" id="phase-lime-stat"></span>
+                        </div>
+                        <div class="training-phase-row flex items-center gap-3" id="phase-segment">
+                            <div class="w-6 h-6 rounded-full border-2 border-brand-border flex items-center justify-center flex-shrink-0" id="phase-segment-icon">
+                                <i class="fa-solid fa-circle text-brand-border text-[8px]"></i>
+                            </div>
+                            <span class="text-sm text-brand-textSecondary" id="phase-segment-label">Account Segmentation & Scoring</span>
+                            <span class="ml-auto text-xs text-brand-textSecondary" id="phase-segment-stat"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Live Log -->
+                <div class="p-5">
+                    <p class="text-xs font-bold text-brand-textSecondary uppercase tracking-wider mb-3 flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-brand-primary animate-pulse"></span>
+                        Live Log
+                    </p>
+                    <div class="font-mono text-xs bg-brand-dark rounded-lg p-4 h-40 overflow-y-auto space-y-1" id="training-log">
+                        <p class="text-brand-textSecondary">Waiting to start...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===================== STEP 4: COMPLETE ===================== -->
+        <div id="panel-step4" class="hidden flex-col gap-6 items-center">
+            <div class="text-center">
+                <div class="w-20 h-20 rounded-full bg-brand-lowSev/20 border-4 border-brand-lowSev flex items-center justify-center mx-auto mb-4 success-ring">
+                    <i class="fa-solid fa-check text-brand-lowSev text-3xl"></i>
+                </div>
+                <h1 class="text-2xl font-bold text-brand-textPrimary">Model Ready</h1>
+                <p class="text-sm text-brand-textSecondary mt-1">Your segmentation engine has been trained and 283 accounts have been scored.</p>
+            </div>
+
+            <!-- Model Summary Cards -->
+            <div class="w-full max-w-2xl grid grid-cols-2 sm:grid-cols-4 gap-4">
+                <div class="bg-brand-cardBg rounded-xl border border-brand-border p-4 text-center shadow-sm">
+                    <p class="text-2xl font-bold text-brand-textPrimary">0.82</p>
+                    <p class="text-xs text-brand-textSecondary mt-1">AUC Score</p>
+                    <p class="text-xs text-[#10b981] font-medium mt-1">Excellent</p>
+                </div>
+                <div class="bg-brand-cardBg rounded-xl border border-brand-border p-4 text-center shadow-sm">
+                    <p class="text-2xl font-bold text-brand-textPrimary">0.78</p>
+                    <p class="text-xs text-brand-textSecondary mt-1">F1 Score</p>
+                    <p class="text-xs text-[#10b981] font-medium mt-1">Strong</p>
+                </div>
+                <div class="bg-brand-cardBg rounded-xl border border-brand-border p-4 text-center shadow-sm">
+                    <p class="text-2xl font-bold text-brand-primary">283</p>
+                    <p class="text-xs text-brand-textSecondary mt-1">Accounts Scored</p>
+                    <p class="text-xs text-brand-textSecondary font-medium mt-1">All segments</p>
+                </div>
+                <div class="bg-brand-cardBg rounded-xl border border-brand-border p-4 text-center shadow-sm">
+                    <p class="text-2xl font-bold text-brand-textPrimary">48</p>
+                    <p class="text-xs text-brand-textSecondary mt-1">Features Used</p>
+                    <p class="text-xs text-brand-textSecondary font-medium mt-1">Across 3 sources</p>
+                </div>
+            </div>
+
+            <!-- Segment Distribution Preview -->
+            <div class="w-full max-w-2xl bg-brand-cardBg rounded-xl border border-brand-border shadow-sm p-5">
+                <h3 class="text-sm font-bold text-brand-textPrimary mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-chart-pie text-brand-primary"></i> Initial Segment Distribution
+                </h3>
+                <div class="space-y-3">
+                    <div class="flex items-center gap-3">
+                        <div class="w-3 h-3 rounded-full bg-brand-primary flex-shrink-0"></div>
+                        <span class="text-sm text-brand-textPrimary w-24">Growth</span>
+                        <div class="flex-1 h-3 bg-brand-bg rounded-full overflow-hidden">
+                            <div class="h-full bg-brand-primary rounded-full" style="width:50.1%"></div>
+                        </div>
+                        <span class="text-sm font-mono text-brand-textPrimary w-16 text-right">142 accts</span>
+                        <span class="text-xs text-brand-textSecondary w-10 text-right">50.1%</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <div class="w-3 h-3 rounded-full bg-brand-lowSev flex-shrink-0"></div>
+                        <span class="text-sm text-brand-textPrimary w-24">Opportunity</span>
+                        <div class="flex-1 h-3 bg-brand-bg rounded-full overflow-hidden">
+                            <div class="h-full bg-brand-lowSev rounded-full" style="width:31.4%"></div>
+                        </div>
+                        <span class="text-sm font-mono text-brand-textPrimary w-16 text-right">89 accts</span>
+                        <span class="text-xs text-brand-textSecondary w-10 text-right">31.4%</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <div class="w-3 h-3 rounded-full bg-brand-critical flex-shrink-0"></div>
+                        <span class="text-sm text-brand-textPrimary w-24">At-Risk</span>
+                        <div class="flex-1 h-3 bg-brand-bg rounded-full overflow-hidden">
+                            <div class="h-full bg-brand-critical rounded-full" style="width:12%"></div>
+                        </div>
+                        <span class="text-sm font-mono text-brand-textPrimary w-16 text-right">34 accts</span>
+                        <span class="text-xs text-brand-textSecondary w-10 text-right">12.0%</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <div class="w-3 h-3 rounded-full bg-brand-textSecondary flex-shrink-0"></div>
+                        <span class="text-sm text-brand-textPrimary w-24">Strategic</span>
+                        <div class="flex-1 h-3 bg-brand-bg rounded-full overflow-hidden">
+                            <div class="h-full bg-brand-textSecondary rounded-full" style="width:6.5%"></div>
+                        </div>
+                        <span class="text-sm font-mono text-brand-textPrimary w-16 text-right">18 accts</span>
+                        <span class="text-xs text-brand-textSecondary w-10 text-right">6.5%</span>
+                    </div>
+                </div>
+            </div>
+
+            <a href="0-BI Platform - Executive Overvi.html"
+                class="px-8 py-3 bg-brand-primary text-brand-dark rounded-lg text-sm font-bold hover:bg-brand-primary/90 transition-colors shadow-sm flex items-center gap-2">
+                Open Executive Dashboard <i class="fa-solid fa-arrow-right"></i>
+            </a>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-brand-cardBg border-t border-brand-border py-4 px-6 mt-auto">
+        <div class="max-w-[1100px] mx-auto flex flex-col md:flex-row items-center justify-between gap-3 text-xs text-brand-textSecondary">
+            <div class="flex items-center gap-2">
+                <i class="fa-solid fa-chart-pie text-brand-primary"></i>
+                <span>© 2026 PharmaBI Systems. All rights reserved.</span>
+            </div>
+            <div class="flex items-center gap-4">
+                <span class="flex items-center gap-1"><i class="fa-solid fa-lock text-brand-primary"></i> TLS 1.3 Encrypted</span>
+                <span class="flex items-center gap-1"><i class="fa-solid fa-shield-halved text-brand-primary"></i> SOC 2 Type II</span>
+                <span class="flex items-center gap-1"><i class="fa-solid fa-circle-check text-brand-primary"></i> HIPAA Compliant</span>
+            </div>
+        </div>
+    </footer>
+
+<script>
+// ============================================================
+// TABLE DEFINITIONS PER PROVIDER
+// ============================================================
+const PROVIDER_TABLES = {
+    veeva: [
+        { id: 'vv_accounts',       label: 'vv_accounts',            desc: 'Hospital Account Data — Size, Beds, Specialties', tag: 'Hospital Account Data' },
+        { id: 'vv_hcp_profiles',   label: 'vv_hcp_profiles',        desc: 'HCP Data — Specialty, Affiliation, Experience',   tag: 'HCP Data' },
+        { id: 'vv_crm_activity',   label: 'vv_crm_activity',        desc: 'Sales CRM Data — Rep visits, Call notes',         tag: 'Sales CRM Data' },
+        { id: 'vv_affiliations',   label: 'vv_affiliation_network', desc: 'Affiliation Network — HCP-Hospital mapping',      tag: 'Affiliation Network' },
+        { id: 'vv_drug_products',  label: 'vv_drug_products',       desc: 'Drug Product Data — Brand performance',           tag: 'Drug Product Data' },
+    ],
+    databricks: [
+        { id: 'db_digital_events',  label: 'digital_engagement_events', desc: 'Email opens, clicks, webinar participation',  tag: 'Digital Engagement' },
+        { id: 'db_geo_territory',   label: 'geo_territory_mapping',     desc: 'Geographic Data — Region-wise trends',        tag: 'Geographic Data' },
+        { id: 'db_patient_journey', label: 'patient_journey_deident',   desc: 'De-identified Patient Data — Disease prevalence, Treatment pathways', tag: 'Patient Data (De-ID)' },
+        { id: 'db_market_share',    label: 'rx_market_share_delta',     desc: 'Market share deltas by territory & product',  tag: 'Market Analysis' },
+        { id: 'db_web_sessions',    label: 'web_session_analytics',     desc: 'Website visits, time-on-page, content affinity', tag: 'Digital Engagement' },
+        { id: 'db_competitor_rx',   label: 'competitor_rx_claims',      desc: 'Competitor Rx volume by account',             tag: 'Drug Product Data' },
+    ],
+    sql: [
+        { id: 'sq_rx_claims',      label: 'iqvia_rx_claims_national',  desc: 'Prescription Claims — Rx & Medical claims, Patient-level treatment', tag: 'Prescription Claims' },
+        { id: 'sq_symphony',       label: 'symphony_npa_weekly',       desc: 'Symphony Health — National Prescription Audit weekly feed',         tag: 'Prescription Claims' },
+        { id: 'sq_market_insights',label: 'iqvia_market_dynamics',     desc: 'IQVIA Market Insights — Therapy trends, Market share',             tag: 'Market Analysis' },
+        { id: 'sq_third_party_hcp',label: 'iqvia_hcp_universe',        desc: 'Third-party HCP universe — Verified specialty & affiliations',      tag: 'HCP Data' },
+    ]
+};
+
+// ============================================================
+// STATE
+// ============================================================
+const state = {
+    connected: { veeva: false, databricks: false, sql: false },
+    currentStep: 1
+};
+
+function connectedCount() {
+    return Object.values(state.connected).filter(Boolean).length;
+}
+
+// ============================================================
+// STEP NAVIGATION
+// ============================================================
+function goToStep(n) {
+    if (n === 2 && connectedCount() < 3) return;
+
+    state.currentStep = n;
+    [1,2,3,4].forEach(i => {
+        document.getElementById('panel-step' + i).classList.add('hidden');
+        document.getElementById('panel-step' + i).classList.remove('flex');
+    });
+    const panel = document.getElementById('panel-step' + n);
+    panel.classList.remove('hidden');
+    panel.classList.add('flex');
+
+    // Update stepper dots
+    [1,2,3,4].forEach(i => {
+        const dot = document.getElementById('step' + i + '-dot');
+        const wrap = document.getElementById('step' + i + '-dot-wrap');
+        const label = wrap.querySelector('span');
+        if (i < n) {
+            dot.className = 'step-dot w-10 h-10 rounded-full bg-brand-lowSev text-white flex items-center justify-center font-bold shadow-sm border-4 border-brand-cardBg';
+            dot.innerHTML = '<i class="fa-solid fa-check text-sm"></i>';
+            label.className = 'text-xs font-medium text-brand-textSecondary mt-2 whitespace-nowrap';
+        } else if (i === n) {
+            dot.className = 'step-dot w-10 h-10 rounded-full bg-brand-primary text-brand-dark flex items-center justify-center font-bold shadow-sm border-4 border-brand-cardBg ring-4 ring-brand-primary/20';
+            dot.innerHTML = i;
+            label.className = 'text-xs font-semibold text-brand-primary mt-2 whitespace-nowrap';
+        } else {
+            dot.className = 'step-dot w-10 h-10 rounded-full bg-brand-bg text-brand-textSecondary flex items-center justify-center font-bold border-2 border-brand-border shadow-sm';
+            dot.innerHTML = i;
+            label.className = 'text-xs font-medium text-brand-textSecondary mt-2 whitespace-nowrap';
+        }
+    });
+
+    // Update connector lines
+    ['conn-1-2','conn-2-3','conn-3-4'].forEach((id, idx) => {
+        const el = document.getElementById(id);
+        el.style.background = (idx + 2 <= n) ? '#7FA3C0' : '#C9C1B1';
+    });
+
+    if (n === 3) startTraining();
+}
+
+// ============================================================
+// CONNECT PROVIDER
+// ============================================================
+function connectProvider(provider) {
+    const btn = document.querySelector(`#provider-${provider} button`);
+    const originalText = btn.textContent.trim();
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin mr-2"></i> Connecting...';
+
+    setTimeout(() => {
+        state.connected[provider] = true;
+
+        // Update status badge
+        const statusEl = document.getElementById(`${provider}-status`);
+        statusEl.className = 'inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-brand-lowSev/10 border border-brand-lowSev/30 text-brand-lowSev';
+        statusEl.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-brand-lowSev"></span> Connected';
+
+        // Swap creds for success state
+        const creds = document.getElementById(`${provider}-creds`);
+        creds.innerHTML = `
+            <div class="flex items-center gap-2 p-3 bg-brand-lowSev/5 rounded-lg border border-brand-lowSev/20">
+                <i class="fa-solid fa-circle-check text-brand-lowSev"></i>
+                <div>
+                    <p class="text-sm font-medium text-brand-textPrimary">Connection verified</p>
+                    <p class="text-xs text-brand-textSecondary">${PROVIDER_TABLES[provider].length} tables discovered</p>
+                </div>
+            </div>
+        `;
+
+        // Show tables
+        renderTables(provider);
+
+        // Update summary counter
+        const cnt = connectedCount();
+        document.getElementById('connected-count').textContent = `${cnt} of 3`;
+        if (cnt >= 2) document.getElementById('table-count').classList.remove('hidden');
+
+        // Show source summary when all 3 done
+        if (cnt === 3) {
+            document.getElementById('source-summary').classList.remove('hidden');
+            const nextBtn = document.getElementById('btn-step1-next');
+            nextBtn.disabled = false;
+            nextBtn.classList.remove('opacity-40', 'cursor-not-allowed');
+        }
+
+    }, 1800 + Math.random() * 800);
+}
+
+function renderTables(provider) {
+    const container = document.getElementById(`${provider}-tables`);
+    const list = document.getElementById(`${provider}-table-list`);
+    container.classList.remove('hidden');
+
+    const tables = PROVIDER_TABLES[provider];
+    list.innerHTML = tables.map(t => `
+        <label class="flex items-start gap-2.5 p-2.5 rounded-lg hover:bg-brand-bg cursor-pointer border border-transparent hover:border-brand-tableBorder transition-colors group">
+            <input type="checkbox" checked class="mt-0.5 w-3.5 h-3.5 text-brand-primary border-brand-border rounded focus:ring-brand-primary flex-shrink-0">
+            <div class="flex-1 min-w-0">
+                <p class="text-xs font-mono font-semibold text-brand-textPrimary truncate">${t.label}</p>
+                <p class="text-xs text-brand-textSecondary mt-0.5 leading-relaxed">${t.desc}</p>
+            </div>
+            <span class="text-[10px] font-medium px-1.5 py-0.5 rounded bg-brand-primary/10 text-brand-textPrimary whitespace-nowrap flex-shrink-0 mt-0.5">${t.tag}</span>
+        </label>
+    `).join('');
+}
+
+// ============================================================
+// FEATURE WEIGHT UPDATER
+// ============================================================
+function updateFW() {
+    const ids = ['fw-rev','fw-rx','fw-loyalty','fw-digital','fw-geo'];
+    const barIds = ['fw-bar-rev','fw-bar-rx','fw-bar-loyalty','fw-bar-digital','fw-bar-geo'];
+    let total = 0;
+    ids.forEach((id, i) => {
+        const v = parseInt(document.getElementById(id).value);
+        total += v;
+        document.getElementById(id + '-val').textContent = v + '%';
+        document.getElementById(barIds[i]).style.width = v + '%';
+    });
+    const totalEl = document.getElementById('fw-total');
+    totalEl.textContent = total + '%';
+    totalEl.className = total === 100
+        ? 'font-mono font-bold text-[#10b981]'
+        : 'font-mono font-bold text-brand-critical';
+}
+
+function resetHyperparams() {
+    document.getElementById('hp-estimators').value = 300; document.getElementById('hp-estimators-val').textContent = '300';
+    document.getElementById('hp-depth').value = 6; document.getElementById('hp-depth-val').textContent = '6';
+    document.getElementById('hp-lr').value = 10; document.getElementById('hp-lr-val').textContent = '0.10';
+    document.getElementById('hp-split').value = 80; document.getElementById('hp-split-val').textContent = '80 / 20';
+    document.getElementById('hp-leaf').value = 5; document.getElementById('hp-leaf-val').textContent = '5';
+    document.getElementById('fw-rev').value = 30; document.getElementById('fw-rx').value = 25;
+    document.getElementById('fw-loyalty').value = 20; document.getElementById('fw-digital').value = 15;
+    document.getElementById('fw-geo').value = 10;
+    updateFW();
+}
+
+// ============================================================
+// TRAINING SIMULATION
+// ============================================================
+const TRAINING_PHASES = [
+    {
+        id: 'ingest', label: 'Data Ingestion & Schema Validation', pct: [0, 18],
+        logs: [
+            '[00:01] Connecting to Veeva Vault... OK',
+            '[00:02] Connecting to Databricks Delta Lake... OK',
+            '[00:03] Connecting to IQVIA SQL endpoint... OK',
+            '[00:04] Validating schema: vv_accounts → 283 rows, 22 cols',
+            '[00:05] Validating schema: iqvia_rx_claims_national → 1.2M rows',
+            '[00:06] Validating schema: digital_engagement_events → 48,291 rows',
+            '[00:07] Null check: 3 nulls imputed in vv_hcp_profiles.specialty',
+            '[00:08] Schema validation complete. 15 tables passed.'
+        ],
+        stat: '15 tables · 1.4M rows',
+        phaseLabel: 'Data Ingestion',
+        phaseSub: 'Validating schemas across 3 sources'
+    },
+    {
+        id: 'feature', label: 'Feature Engineering & Normalization', pct: [18, 42],
+        logs: [
+            '[00:09] Computing Rx volume trailing-12M per account...',
+            '[00:11] Normalizing ARR to z-score (μ=1.51M, σ=0.88M)',
+            '[00:13] Encoding geographic territory as one-hot (18 regions)',
+            '[00:15] Computing digital affinity score from email + web + webinar signals',
+            '[00:17] Building affiliation graph: 283 accounts, 1,840 HCP nodes',
+            '[00:19] Feature matrix shape: 283 × 48. Correlation check: VIF max 2.3 (Pass)',
+        ],
+        stat: '48 features built',
+        phaseLabel: 'Feature Engineering',
+        phaseSub: 'Building 48 features across all data sources'
+    },
+    {
+        id: 'train', label: 'XGBoost + GLMM Ensemble Training', pct: [42, 72],
+        logs: [
+            '[00:21] Initializing XGBoost: n_estimators=300, max_depth=6, eta=0.10',
+            '[00:23] GLMM initialization: random effects on territory + account_type',
+            '[00:25] Fold 1/5: XGB training... AUC=0.79',
+            '[00:28] Fold 2/5: XGB training... AUC=0.81',
+            '[00:31] Fold 3/5: XGB training... AUC=0.83',
+            '[00:34] Fold 4/5: XGB training... AUC=0.82',
+            '[00:37] Fold 5/5: XGB training... AUC=0.84',
+            '[00:39] Ensemble weight optimization: XGB=0.65, GLMM=0.35',
+        ],
+        stat: 'AUC: 0.82 · F1: 0.78',
+        phaseLabel: 'Ensemble Training',
+        phaseSub: 'XGBoost + GLMM training in progress'
+    },
+    {
+        id: 'cv', label: 'Cross-Validation (5-Fold)', pct: [72, 84],
+        logs: [
+            '[00:40] Running stratified 5-fold CV on holdout set...',
+            '[00:41] Precision: 0.81 | Recall: 0.76 | F1: 0.78',
+            '[00:42] Confusion matrix: Growth=138/142 correct, At-Risk=31/34 correct',
+            '[00:43] Model stability check: σ(AUC across folds) = 0.018 → Stable',
+        ],
+        stat: 'Stable · σ=0.018',
+        phaseLabel: 'Cross-Validation',
+        phaseSub: 'Evaluating model generalization'
+    },
+    {
+        id: 'lime', label: 'LIME Explainability Index Build', pct: [84, 94],
+        logs: [
+            '[00:44] Generating LIME explanations for 283 accounts...',
+            '[00:45] Top global features: Rx_Volume_T12M (+0.34), Contract_Tenure (+0.21)',
+            '[00:46] Flagged: Digital_Affinity as top negative driver for At-Risk accounts',
+            '[00:47] LIME index saved. Avg explanation time: 12ms/account',
+        ],
+        stat: '283 explanations',
+        phaseLabel: 'LIME Indexing',
+        phaseSub: 'Building explainability layer'
+    },
+    {
+        id: 'segment', label: 'Account Segmentation & Scoring', pct: [94, 100],
+        logs: [
+            '[00:48] Scoring all 283 accounts...',
+            '[00:49] Growth (85–100): 142 accounts classified',
+            '[00:49] Opportunity (50–69): 89 accounts classified',
+            '[00:50] At-Risk (0–49): 34 accounts classified',
+            '[00:50] Strategic (70–84): 18 accounts classified',
+            '[00:51] ✓ Model v2.4-XGBoost saved. Ready to serve.',
+        ],
+        stat: '283 accounts scored',
+        phaseLabel: 'Segmentation Complete',
+        phaseSub: '283 accounts classified and scored'
+    }
+];
+
+function startTraining() {
+    let logEl = document.getElementById('training-log');
+    logEl.innerHTML = '';
+    let phaseIndex = 0;
+    let logIndex = 0;
+    let currentPct = 0;
+    let targetPct = 0;
+    let phaseStarted = false;
+    let allLogs = [];
+
+    // Flatten all logs with phase metadata
+    TRAINING_PHASES.forEach(phase => {
+        phase.logs.forEach(log => allLogs.push({ log, phase }));
+    });
+
+    function setPhaseActive(phase) {
+        const iconEl = document.getElementById(`phase-${phase.id}-icon`);
+        const labelEl = document.getElementById(`phase-${phase.id}-label`);
+        iconEl.className = 'w-6 h-6 rounded-full border-2 border-brand-primary flex items-center justify-center flex-shrink-0 animate-pulse';
+        iconEl.innerHTML = '<div class="w-2 h-2 rounded-full bg-brand-primary"></div>';
+        labelEl.className = 'text-sm text-brand-textPrimary font-medium';
+        document.getElementById('training-phase-label').textContent = phase.phaseLabel;
+        document.getElementById('training-phase-sub').textContent = phase.phaseSub;
+    }
+
+    function setPhaseComplete(phase) {
+        const iconEl = document.getElementById(`phase-${phase.id}-icon`);
+        const statEl = document.getElementById(`phase-${phase.id}-stat`);
+        const labelEl = document.getElementById(`phase-${phase.id}-label`);
+        iconEl.className = 'w-6 h-6 rounded-full bg-brand-lowSev flex items-center justify-center flex-shrink-0';
+        iconEl.innerHTML = '<i class="fa-solid fa-check text-white" style="font-size:10px"></i>';
+        statEl.textContent = phase.stat;
+        statEl.className = 'ml-auto text-xs text-brand-lowSev font-medium';
+        labelEl.className = 'text-sm text-brand-textPrimary';
+    }
+
+    const logInterval = setInterval(() => {
+        if (logIndex >= allLogs.length) {
+            clearInterval(logInterval);
+            // All done
+            setTimeout(() => goToStep(4), 800);
+            return;
+        }
+
+        const { log, phase } = allLogs[logIndex];
+        const phaseIdx = TRAINING_PHASES.indexOf(phase);
+
+        // Activate new phase
+        if (phaseIdx !== phaseIndex || !phaseStarted) {
+            if (phaseStarted && phaseIdx > phaseIndex) {
+                setPhaseComplete(TRAINING_PHASES[phaseIndex]);
+            }
+            phaseIndex = phaseIdx;
+            phaseStarted = true;
+            setPhaseActive(phase);
+        }
+
+        // Advance progress bar
+        targetPct = Math.round(phase.pct[0] + ((logIndex - TRAINING_PHASES.slice(0, phaseIdx).reduce((s,p) => s + p.logs.length, 0)) / phase.logs.length) * (phase.pct[1] - phase.pct[0]));
+        currentPct = targetPct;
+        document.getElementById('training-bar').style.width = currentPct + '%';
+        document.getElementById('training-pct').textContent = currentPct + '%';
+        document.getElementById('training-eta').textContent = currentPct < 100 ? `Est. ~${Math.round((100 - currentPct) * 0.4)}s remaining` : 'Finalizing...';
+
+        // Append log line
+        logEl.innerHTML += `<p class="log-entry text-[#7FA3C0]">${log}</p>`;
+        logEl.scrollTop = logEl.scrollHeight;
+
+        // Mark last phase complete at end
+        if (logIndex === allLogs.length - 1) {
+            setPhaseComplete(TRAINING_PHASES[phaseIndex]);
+        }
+
+        logIndex++;
+    }, 420);
+}
+</script>
+</body>
+</html>

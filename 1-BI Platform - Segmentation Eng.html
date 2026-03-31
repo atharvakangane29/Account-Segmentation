@@ -81,18 +81,7 @@
             </button>
 
             <!-- Profile Removed as requested -->
-            <div class="flex items-center gap-2 cursor-pointer pl-2 border-l border-brand-border/30">
-                <div class="hidden sm:block text-sm text-right">
-                    <p class="font-medium text-white leading-none">Dr. A. Carter</p>
-                    <p class="text-xs text-brand-textSecondary mt-1">SVP Sales</p>
-                </div>
-                <i class="fa-solid fa-chevron-down text-brand-textSecondary text-xs ml-1"></i>
-            </div>
             
-            <!-- Mobile Menu Toggle -->
-            <button class="md:hidden p-2 text-brand-textSecondary hover:text-white">
-                <i class="fa-solid fa-bars"></i>
-            </button>
         </div>
     </header>
 
@@ -176,6 +165,27 @@
                             <div id="bar-loyalty" class="weight-bar bg-brand-textSecondary" style="width:20%"></div>
                             <div id="bar-affinity" class="weight-bar bg-brand-critical" style="width:25%"></div>
                         </div>
+                    </div>
+                    <div id="weight-revenue">
+                        <div class="flex justify-between text-sm mb-1">
+                            <span class="font-medium text-brand-textPrimary">K Cluster</span>
+                            <span class="text-brand-textSecondary font-mono" id="k-val">4</span>
+                        </div>
+                        <input type="range" min="0" max="8" value="4" id="rev-slider" class="w-full" oninput="document.getElementById('k-val').textContent=this.value"">
+                    </div>
+                    <div id="weight-growth">
+                        <div class="flex justify-between text-sm mb-1">
+                            <span class="font-medium text-brand-textPrimary">Look Back Window</span>
+                            <span class="text-brand-textSecondary font-mono" id="lookback-val">6 mo</span>
+                        </div>
+                        <input type="range" min="3" max="12" value="6" step ="3" id="k-slider" class="w-full" oninput="document.getElementById('lookback-val').textContent=this.value + ' mo'">
+                    </div>
+                    <div id="weight-loyalty">
+                        <div class="flex justify-between text-sm mb-1">
+                            <span class="font-medium text-brand-textPrimary">Significance (IV)</span>
+                            <span class="text-brand-textSecondary font-mono" id="iv-val"> > 0.10 </span>
+                        </div>
+                        <input type="range" min="5" max="50" value="10" step="5" id="iv-slider" class="w-full" oninput="document.getElementById('iv-val').textContent='> 0.'+String(this.value).padStart(2,'0')">
                     </div>
                 </div>
                 
