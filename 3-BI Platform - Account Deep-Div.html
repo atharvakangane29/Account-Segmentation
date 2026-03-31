@@ -126,7 +126,7 @@
                 <span class="text-brand-textPrimary font-medium">Mercy Care Network</span>
             </div>
             <div class="flex items-center gap-3">
-                <button class="px-4 py-2 bg-brand-cardBg border border-brand-border rounded-lg shadow-sm text-sm font-medium text-brand-textPrimary hover:bg-brand-bg transition-colors">
+                <button id="btn-export-deep-dive" class="px-4 py-2 bg-brand-cardBg border border-brand-border rounded-lg shadow-sm text-sm font-medium text-brand-textPrimary hover:bg-brand-bg transition-colors">
                     <i class="fa-regular fa-file-pdf mr-2"></i> Export Report
                 </button>
                 <button class="px-4 py-2 bg-brand-primary border border-transparent rounded-lg shadow-sm text-sm font-medium text-brand-dark hover:bg-brand-primary/90 transition-colors">
@@ -427,8 +427,8 @@
     <footer id="global-footer" class="bg-brand-cardBg border-t border-brand-border mt-auto py-6 px-4 sm:px-6 lg:px-8">
         <div class="max-w-[1440px] mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
             <div class="flex items-center gap-2 text-brand-textSecondary text-sm">
-                <i class="fa-solid fa-chart-pie text-brand-primary"></i>
-                <span>© 2026 PharmaBI Systems. All rights reserved.</span>
+                <i class="text-brand-primary" data-fa-i2svg=""></i>
+                <span>© 2026 Circulants. All rights reserved.</span>
             </div>
             <div class="flex items-center gap-6 text-sm">
                 <a href="#" class="text-brand-textSecondary hover:text-brand-textPrimary transition-colors">Privacy Policy</a>
@@ -437,6 +437,98 @@
             </div>
         </div>
     </footer>
+
+    <!-- Deep-Dive Export Modal -->
+    <div id="dd-export-modal"
+        class="fixed inset-0 z-[100] flex hidden items-center justify-center opacity-0 transition-opacity duration-300">
+        <div class="absolute inset-0 bg-brand-dark/60 backdrop-blur-sm" id="dd-export-backdrop"></div>
+
+        <div class="relative w-full max-w-4xl max-h-[95vh] flex flex-col bg-brand-bg rounded-xl shadow-2xl overflow-hidden mx-4 z-10">
+            <div class="flex items-center justify-between p-4 border-b border-brand-border bg-brand-cardBg">
+                <h3 class="text-lg font-bold text-brand-textPrimary">Account Deep-Dive Report</h3>
+                <button id="btn-close-dd-export"
+                    class="text-brand-textSecondary hover:text-brand-textPrimary transition-colors p-1 rounded-md hover:bg-brand-bg">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <div class="flex-1 overflow-y-auto p-8 bg-[#f4f7f9]">
+                <div id="dd-print-paper"
+                    class="bg-white mx-auto max-w-3xl min-h-[800px] shadow-sm border border-gray-200 p-12 font-serif">
+                    <h1 class="text-3xl font-extrabold text-[#111827] mb-1">ACCOUNT DEEP-DIVE REPORT</h1>
+                    <h2 class="text-xl italic text-brand-primary mb-4" id="dd-export-acct-name">Account Name</h2>
+                    <p class="text-xs font-semibold text-gray-400 uppercase tracking-widest border-b border-gray-300 pb-4 mb-8"
+                        id="dd-export-date">GENERATED MARCH 31, 2026</p>
+
+                    <div class="grid grid-cols-3 gap-4 mb-8">
+                        <div class="bg-gray-50 p-4 border border-gray-100 text-center">
+                            <p class="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">TOTAL ARR</p>
+                            <p class="text-2xl font-bold text-brand-textPrimary" id="dd-export-arr">$0</p>
+                        </div>
+                        <div class="bg-gray-50 p-4 border border-gray-100 text-center">
+                            <p class="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">HEALTH SCORE</p>
+                            <p class="text-2xl font-bold text-brand-textPrimary" id="dd-export-health">0/100</p>
+                        </div>
+                        <div class="bg-gray-50 p-4 border border-gray-100 text-center">
+                            <p class="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">SEGMENT</p>
+                            <p class="text-2xl font-bold text-brand-textPrimary" id="dd-export-segment">Growth</p>
+                        </div>
+                    </div>
+
+                    <h3 class="text-sm font-bold text-gray-400 uppercase tracking-widest border-b border-gray-200 pb-2 mb-4">
+                        HEALTH RADAR & LIME ANALYSIS</h3>
+                    <div class="grid grid-cols-2 gap-4 mb-8">
+                        <div class="border border-gray-200 rounded overflow-hidden">
+                            <p class="text-[10px] font-bold text-gray-500 uppercase tracking-wider p-2 bg-gray-50 border-b border-gray-200">Multi-Factor Health Radar</p>
+                            <img id="dd-export-radar-img" class="w-full" alt="Radar Chart" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" />
+                        </div>
+                        <div class="border border-gray-200 rounded overflow-hidden p-4">
+                            <p class="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-3">LIME Feature Drivers</p>
+                            <div id="dd-export-lime" class="space-y-2 text-sm text-gray-700">
+                                <!-- Populated by JS -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3 class="text-sm font-bold text-gray-400 uppercase tracking-widest border-b border-gray-200 pb-2 mb-4">
+                        MARGIN SIMULATOR SNAPSHOT</h3>
+                    <div class="grid grid-cols-2 gap-6 mb-8">
+                        <div class="bg-gray-50 p-4 border border-gray-100 text-center">
+                            <p class="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">PROJECTED REVENUE</p>
+                            <p class="text-2xl font-bold text-brand-textPrimary" id="dd-export-proj-rev">$0</p>
+                        </div>
+                        <div class="bg-gray-50 p-4 border border-gray-100 text-center">
+                            <p class="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">PROJECTED MARGIN</p>
+                            <p class="text-2xl font-bold text-brand-primary" id="dd-export-proj-margin">0%</p>
+                        </div>
+                    </div>
+
+                    <h3 class="text-sm font-bold text-gray-400 uppercase tracking-widest border-b border-gray-200 pb-2 mb-4">
+                        AI NARRATIVE INSIGHT</h3>
+                    <p class="text-sm text-gray-700 leading-relaxed mb-4" id="dd-export-ai">Loading AI insight...</p>
+
+                    <h3 class="text-sm font-bold text-gray-400 uppercase tracking-widest border-b border-gray-200 pb-2 mb-4">
+                        RECOMMENDED NEXT BEST ACTION</h3>
+                    <p class="text-sm text-gray-700" id="dd-export-nba">Loading...</p>
+                </div>
+            </div>
+
+            <div class="p-4 border-t border-brand-border bg-white grid grid-cols-3 gap-4">
+                <button id="btn-dd-print-pdf"
+                    class="flex items-center justify-center gap-2 py-3 border border-gray-200 rounded-md text-sm font-bold text-brand-textPrimary hover:bg-brand-bg transition-colors">
+                    <i class="fa-regular fa-file-pdf"></i> PDF
+                </button>
+                <button onclick="alert('Word export initializing...')"
+                    class="flex items-center justify-center gap-2 py-3 border border-gray-200 rounded-md text-sm font-bold text-brand-textPrimary hover:bg-brand-bg transition-colors">
+                    <i class="fa-regular fa-file-word"></i> Word
+                </button>
+                <button onclick="alert('HTML snippet copied to clipboard!')"
+                    class="flex items-center justify-center gap-2 py-3 border border-gray-200 rounded-md text-sm font-bold text-brand-textPrimary hover:bg-brand-bg transition-colors">
+                    <i class="fa-solid fa-code"></i> HTML
+                </button>
+            </div>
+        </div>
+    </div>
 
     <!-- External JS -->
     <script src="data/mock-data.js"></script>

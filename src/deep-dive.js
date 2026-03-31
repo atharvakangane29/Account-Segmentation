@@ -128,6 +128,94 @@ function initDeepDivePage(data) {
 
     // Initial calculation
     updateSimulatorImpact();
+
+    // === DEEP-DIVE EXPORT MODAL ===
+    const ddModal = document.getElementById('dd-export-modal');
+
+    const closeDDModal = () => {
+        ddModal.classList.remove('opacity-100');
+        ddModal.classList.add('opacity-0');
+        setTimeout(() => ddModal.classList.add('hidden'), 300);
+    };
+
+    document.getElementById('btn-export-deep-dive')?.addEventListener('click', () => {
+        // 1. Header
+        const acctName = document.querySelector('#account-header h1')?.textContent || 'Account';
+        document.getElementById('dd-export-acct-name').textContent = acctName;
+        const today = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+        document.getElementById('dd-export-date').textContent = 'GENERATED ' + today.toUpperCase();
+
+        // 2. KPI summary – scrape live values from the account header stats
+        const statVals = document.querySelectorAll('#account-header .text-lg.font-bold');
+        if (statVals.length >= 2) {
+            document.getElementById('dd-export-arr').textContent = statVals[0]?.textContent || '$0';
+            document.getElementById('dd-export-health').textContent = (statVals[1]?.textContent || '0') + '/100';
+        }
+
+        // Segment
+        const segmentBadge = document.querySelector('#account-header .rounded-full');
+        document.getElementById('dd-export-segment').textContent = segmentBadge?.textContent?.trim() || 'Growth';
+
+        // 3. Capture Radar Chart
+        const radarEl = document.getElementById('radar-chart');
+        if (radarEl && typeof Plotly !== 'undefined') {
+            Plotly.toImage(radarEl, { format: 'png', width: 500, height: 340 })
+                .then(url => {
+                    const img = document.getElementById('dd-export-radar-img');
+                    if (img) img.src = url;
+                })
+                .catch(err => console.warn('[DD Export] Radar capture failed:', err));
+        }
+
+        // 4. LIME features – scrape from the page
+        const limeContainer = document.getElementById('dd-export-lime');
+        if (limeContainer) {
+            const limeRows = document.querySelectorAll('#lime-explainability .flex.items-center.gap-3');
+            let limeHTML = '';
+            limeRows.forEach(row => {
+                const label = row.querySelector('.w-28')?.textContent?.trim();
+                const value = row.querySelector('.font-mono')?.textContent?.trim();
+                if (label && value) {
+                    const isPositive = value.startsWith('+');
+                    limeHTML += `<div class="flex justify-between items-center py-1 border-b border-gray-100">
+                        <span class="text-gray-700">${label}</span>
+                        <span class="font-mono font-bold ${isPositive ? 'text-emerald-600' : 'text-rose-600'}">${value}</span>
+                    </div>`;
+                }
+            });
+            limeContainer.innerHTML = limeHTML || '<p class="text-gray-400 text-xs">No LIME data available.</p>';
+        }
+
+        // 5. Margin simulator snapshot
+        document.getElementById('dd-export-proj-rev').textContent = document.getElementById('proj-rev')?.textContent || '$0';
+        document.getElementById('dd-export-proj-margin').textContent = document.getElementById('proj-margin')?.textContent || '0%';
+
+        // 6. AI Insight
+        document.getElementById('dd-export-ai').textContent = document.getElementById('deep-ai-text')?.textContent || 'No AI insight available.';
+
+        // 7. Next Best Action
+        const nbaEl = document.querySelector('#ai-insight .bg-brand-bg .text-sm.text-brand-textPrimary.font-medium');
+        document.getElementById('dd-export-nba').textContent = nbaEl?.textContent || 'No recommendation available.';
+
+        // 8. Show modal
+        ddModal.classList.remove('hidden');
+        void ddModal.offsetWidth;
+        ddModal.classList.remove('opacity-0');
+        ddModal.classList.add('opacity-100');
+    });
+
+    document.getElementById('btn-close-dd-export')?.addEventListener('click', closeDDModal);
+    document.getElementById('dd-export-backdrop')?.addEventListener('click', closeDDModal);
+
+    // PDF / Print
+    document.getElementById('btn-dd-print-pdf')?.addEventListener('click', () => {
+        const printContent = document.getElementById('dd-print-paper').outerHTML;
+        const originalBody = document.body.innerHTML;
+        document.body.innerHTML = `<div style="max-width: 800px; margin: 0 auto; padding: 20px;">${printContent}</div>`;
+        window.print();
+        document.body.innerHTML = originalBody;
+        window.location.reload();
+    });
 }
 
 document.addEventListener('DOMContentLoaded', function () {

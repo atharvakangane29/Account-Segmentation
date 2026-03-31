@@ -306,8 +306,81 @@ function attachExecutivePageEvents() {
             : '<i class="fa-solid fa-filter text-brand-textSecondary"></i> Hide Filters';
     });
 
+    // === EXPORT MODAL LOGIC ===
+    const exportModal = document.getElementById('export-modal');
+    
+    const closeExportModal = () => {
+        exportModal.classList.remove('opacity-100');
+        exportModal.classList.add('opacity-0');
+        setTimeout(() => exportModal.classList.add('hidden'), 300);
+    };
+
     document.getElementById('btn-export-report')?.addEventListener('click', () => {
-        alert('Exporting executive summary report…');
+        // 1. Populate the Header Data
+        document.getElementById('export-period').textContent = activeExecutiveRange + ' Performance';
+        const today = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+        document.getElementById('export-date').textContent = 'GENERATED ' + today.toUpperCase();
+
+        // 2. Scrape live KPI values directly from the DOM to ensure consistency
+        const kpis = document.querySelectorAll('#kpi-section h3');
+        const kpiChanges = document.querySelectorAll('#kpi-section .inline-flex.items-center.gap-1');
+        
+        if (kpis.length >= 4) {
+            document.getElementById('export-rev').textContent = kpis[0].textContent;
+            document.getElementById('export-growth-pot').textContent = kpis[1].textContent;
+            document.getElementById('export-churn').textContent = kpis[2].textContent;
+            document.getElementById('export-strat-accts').textContent = kpis[3].textContent;
+            
+            document.getElementById('export-rev-change').textContent = kpiChanges[0].textContent.trim();
+            document.getElementById('export-churn-change').textContent = kpiChanges[2].textContent.trim();
+        }
+
+        // 3. Populate AI Insights
+        document.getElementById('export-insight-1').textContent = document.getElementById('exec-ai-text-1')?.textContent || 'Stable segment distribution noted.';
+        document.getElementById('export-insight-2').textContent = document.getElementById('exec-ai-text-2')?.textContent || 'Review at-risk accounts.';
+        document.getElementById('export-insight-3').textContent = document.getElementById('exec-ai-text-3')?.textContent || 'Optimize current opportunity pipeline.';
+
+        // 4. Capture chart visuals via Plotly
+        const waterfallEl = document.getElementById('waterfall-chart');
+        const donutEl     = document.getElementById('donut-chart');
+
+        const captureChart = (plotEl, imgId) => {
+            if (plotEl && typeof Plotly !== 'undefined') {
+                Plotly.toImage(plotEl, { format: 'png', width: 560, height: 340 })
+                    .then(url => {
+                        const img = document.getElementById(imgId);
+                        if (img) img.src = url;
+                    })
+                    .catch(err => console.warn('[Export] Chart capture failed:', err));
+            }
+        };
+
+        captureChart(waterfallEl, 'export-waterfall-img');
+        captureChart(donutEl,     'export-donut-img');
+
+        // 5. Show Modal
+        exportModal.classList.remove('hidden');
+        // Trigger reflow for transition
+        void exportModal.offsetWidth; 
+        exportModal.classList.remove('opacity-0');
+        exportModal.classList.add('opacity-100');
+    });
+
+    document.getElementById('btn-close-export')?.addEventListener('click', closeExportModal);
+    document.getElementById('export-modal-backdrop')?.addEventListener('click', closeExportModal);
+
+    // PDF / Print Logic
+    document.getElementById('btn-print-pdf')?.addEventListener('click', () => {
+        const printContent = document.getElementById('print-paper').outerHTML;
+        const originalBody = document.body.innerHTML;
+        
+        // Swap body for clean printing
+        document.body.innerHTML = `<div style="max-width: 800px; margin: 0 auto; padding: 20px;">${printContent}</div>`;
+        window.print();
+        
+        // Restore application state
+        document.body.innerHTML = originalBody;
+        window.location.reload(); // Hard reload to securely restore all JS event bindings
     });
 
     ['exec-filter-region', 'exec-filter-segment', 'exec-filter-metric'].forEach(id => {
