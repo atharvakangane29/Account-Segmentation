@@ -103,7 +103,7 @@
             </div>
             
             <div class="flex flex-wrap items-center gap-3">
-                <button class="flex items-center gap-2 px-3 py-2 bg-brand-cardBg border border-brand-border rounded-lg shadow-sm text-sm font-medium text-brand-textPrimary hover:bg-brand-bg transition-colors">
+                <button id="btn-export-csv" class="flex items-center gap-2 px-3 py-2 bg-brand-cardBg border border-brand-border rounded-lg shadow-sm text-sm font-medium text-brand-textPrimary hover:bg-brand-bg transition-colors">
                     <i class="fa-solid fa-download text-brand-textSecondary"></i>
                     Export CSV
                 </button>
@@ -125,7 +125,7 @@
                     </div>
                 </div>
                 <div>
-                    <p class="text-2xl font-bold text-brand-textPrimary">1,248</p>
+                    <p id="metric-total-accounts" class="text-2xl font-bold text-brand-textPrimary">1,248</p>
                     <div class="flex items-center gap-1 mt-1 text-sm">
                         <span class="text-semantic-emerald font-medium flex items-center gap-1"><i class="fa-solid fa-arrow-trend-up text-xs"></i> +12%</span>
                         <span class="text-brand-textSecondary">vs last quarter</span>
@@ -141,9 +141,9 @@
                     </div>
                 </div>
                 <div>
-                    <p class="text-2xl font-bold text-brand-textPrimary">$342.5M</p>
+                    <p id="metric-growth-potential" class="text-2xl font-bold text-brand-textPrimary">$342.5M</p>
                     <div class="flex items-center gap-1 mt-1 text-sm">
-                        <span class="text-semantic-emerald font-medium flex items-center gap-1"><i class="fa-solid fa-arrow-trend-up text-xs"></i> +5.4%</span>
+                        <span class="text-semantic-emerald font-medium flex items-center gap-1"><i class="fa-solid fa-arrow-trend-up text-xs"></i> +8.1%</span>
                         <span class="text-brand-textSecondary">vs last quarter</span>
                     </div>
                 </div>
@@ -157,7 +157,7 @@
                     </div>
                 </div>
                 <div>
-                    <p class="text-2xl font-bold text-brand-textPrimary">86</p>
+                    <p id="metric-at-risk" class="text-2xl font-bold text-brand-textPrimary">86</p>
                     <div class="flex items-center gap-1 mt-1 text-sm">
                         <span class="text-brand-critical font-medium flex items-center gap-1"><i class="fa-solid fa-arrow-trend-up text-xs"></i> +2%</span>
                         <span class="text-brand-textSecondary">vs last quarter</span>
@@ -173,7 +173,7 @@
                     </div>
                 </div>
                 <div>
-                    <p class="text-2xl font-bold text-brand-textPrimary">78/100</p>
+                    <p id="metric-health-score" class="text-2xl font-bold text-brand-textPrimary">78/100</p>
                     <div class="flex items-center gap-1 mt-1 text-sm">
                         <span class="text-brand-textSecondary font-medium flex items-center gap-1"><i class="fa-solid fa-minus text-xs"></i> 0%</span>
                         <span class="text-brand-textSecondary">vs last quarter</span>
@@ -195,7 +195,7 @@
                     <div class="flex flex-wrap items-center gap-2">
                         <div class="relative">
                             <i class="fa-solid fa-filter absolute left-3 top-1/2 -translate-y-1/2 text-brand-textSecondary text-xs"></i>
-                            <select class="pl-8 pr-8 py-1.5 text-sm border border-brand-border rounded-md bg-brand-cardBg text-brand-textPrimary focus:ring-1 focus:ring-brand-primary focus:border-brand-primary shadow-sm appearance-none cursor-pointer">
+                            <select id="filter-segment" class="pl-8 pr-8 py-1.5 text-sm border border-brand-border rounded-md bg-brand-cardBg text-brand-textPrimary focus:ring-1 focus:ring-brand-primary focus:border-brand-primary shadow-sm appearance-none cursor-pointer">
                                 <option>All Segments</option>
                                 <option>Hospitals</option>
                                 <option>Pharmacy Chains</option>
@@ -205,7 +205,7 @@
                         </div>
 
                         <div class="relative">
-                            <select class="pl-3 pr-8 py-1.5 text-sm border border-brand-border rounded-md bg-brand-cardBg text-brand-textPrimary focus:ring-1 focus:ring-brand-primary focus:border-brand-primary shadow-sm appearance-none cursor-pointer">
+                            <select id="filter-score" class="pl-3 pr-8 py-1.5 text-sm border border-brand-border rounded-md bg-brand-cardBg text-brand-textPrimary focus:ring-1 focus:ring-brand-primary focus:border-brand-primary shadow-sm appearance-none cursor-pointer">
                                 <option>Score: All</option>
                                 <option>Growth (Emerald)</option>
                                 <option>Opportunity (Amber)</option>
@@ -216,7 +216,7 @@
                         </div>
                         
                         <div class="relative">
-                            <select class="pl-3 pr-8 py-1.5 text-sm border border-brand-border rounded-md bg-brand-cardBg text-brand-textPrimary focus:ring-1 focus:ring-brand-primary focus:border-brand-primary shadow-sm appearance-none cursor-pointer">
+                            <select id="filter-owner" class="pl-3 pr-8 py-1.5 text-sm border border-brand-border rounded-md bg-brand-cardBg text-brand-textPrimary focus:ring-1 focus:ring-brand-primary focus:border-brand-primary shadow-sm appearance-none cursor-pointer">
                                 <option>Owner: All</option>
                                 <option>Sarah Jenkins</option>
                                 <option>Marcus Thorne</option>
@@ -226,7 +226,7 @@
                         </div>
 
                         <div class="relative">
-                            <select class="pl-3 pr-8 py-1.5 text-sm border border-brand-border rounded-md bg-brand-cardBg text-brand-textPrimary focus:ring-1 focus:ring-brand-primary focus:border-brand-primary shadow-sm appearance-none cursor-pointer">
+                            <select id="filter-region" class="pl-3 pr-8 py-1.5 text-sm border border-brand-border rounded-md bg-brand-cardBg text-brand-textPrimary focus:ring-1 focus:ring-brand-primary focus:border-brand-primary shadow-sm appearance-none cursor-pointer">
                                 <option>Region: All</option>
                                 <option>North America</option>
                                 <option>EMEA</option>
@@ -235,7 +235,7 @@
                             <i class="fa-solid fa-chevron-down absolute right-3 top-1/2 -translate-y-1/2 text-brand-textSecondary text-xs pointer-events-none"></i>
                         </div>
                         
-                        <button class="px-3 py-1.5 text-sm text-brand-primary hover:text-brand-primary/80 font-medium transition-colors">Clear Filters</button>
+                        <button id="btn-clear-filters" class="px-3 py-1.5 text-sm text-brand-primary hover:text-brand-primary/80 font-medium transition-colors">Clear Filters</button>
                     </div>
 
                     <!-- Search & Columns Config -->
@@ -266,185 +266,17 @@
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-brand-tableBorder text-sm">
-                            
-                            <!-- Row 1: Active/Selected State -->
-                            <tr class="hover:bg-brand-primary/5 transition-colors cursor-pointer bg-brand-primary/10 border-l-4 border-l-brand-primary">
-                                <td class="px-4 py-4 text-center text-brand-textSecondary hover:text-brand-primary transition-colors">
-                                    <button><i class="fa-solid fa-chevron-right text-xs"></i></button>
-                                </td>
-                                <td class="px-4 py-4">
-                                    <div class="flex items-center gap-3">
-                                        <div class="w-8 h-8 rounded bg-brand-dark text-white flex items-center justify-center font-bold text-xs">MC</div>
-                                        <div>
-                                            <p class="font-medium text-brand-textPrimary">Mercy Care Network</p>
-                                            <p class="text-xs text-brand-textSecondary">ID: ACC-8921</p>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="px-4 py-4 text-brand-textSecondary">Hospital Chain</td>
-                                <td class="px-4 py-4">
-                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-semantic-emerald/10 text-semantic-emerald border border-semantic-emerald/20">
-                                        <span class="w-1.5 h-1.5 rounded-full bg-semantic-emerald"></span> Growth
-                                    </span>
-                                </td>
-                                <td class="px-4 py-4 font-medium text-brand-textPrimary">$1.2M</td>
-                                <td class="px-4 py-4 text-brand-textSecondary">Sarah Jenkins</td>
-                                <td class="px-4 py-4 text-brand-textSecondary text-xs">2 days ago</td>
-                                <td class="px-4 py-4 text-right">
-                                    <button class="text-brand-textSecondary hover:text-brand-primary p-1"><i class="fa-solid fa-ellipsis-vertical"></i></button>
-                                </td>
-                            </tr>
-
-                            <!-- Row 2: Expanded State -->
-                            <tr class="hover:bg-brand-bg transition-colors cursor-pointer expanded border-l-4 border-l-transparent">
-                                <td class="px-4 py-4 text-center text-brand-primary transition-colors">
-                                    <button><i class="fa-solid fa-chevron-down text-xs"></i></button>
-                                </td>
-                                <td class="px-4 py-4">
-                                    <div class="flex items-center gap-3">
-                                        <div class="w-8 h-8 rounded bg-brand-critical/10 text-brand-critical flex items-center justify-center font-bold text-xs">PH</div>
-                                        <div>
-                                            <p class="font-medium text-brand-textPrimary">Pinnacle Health</p>
-                                            <p class="text-xs text-brand-textSecondary">ID: ACC-7742</p>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="px-4 py-4 text-brand-textSecondary">Hospital Chain</td>
-                                <td class="px-4 py-4">
-                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-brand-critical/10 text-brand-critical border border-brand-critical/20">
-                                        <span class="w-1.5 h-1.5 rounded-full bg-brand-critical"></span> At-Risk
-                                    </span>
-                                </td>
-                                <td class="px-4 py-4 font-medium text-brand-textPrimary">$850K</td>
-                                <td class="px-4 py-4 text-brand-textSecondary">Marcus Thorne</td>
-                                <td class="px-4 py-4 text-brand-textSecondary text-xs">5 hours ago</td>
-                                <td class="px-4 py-4 text-right">
-                                    <button class="text-brand-textSecondary hover:text-brand-primary p-1"><i class="fa-solid fa-ellipsis-vertical"></i></button>
-                                </td>
-                            </tr>
-                            <!-- Expanded Content for Row 2 -->
-                            <tr class="bg-brand-bg/50">
-                                <td colspan="8" class="p-0 border-b border-brand-tableBorder">
-                                    <div class="expandable-row-content px-12">
-                                        <div class="grid grid-cols-3 gap-6">
-                                            <div class="bg-brand-cardBg p-4 rounded-lg border border-brand-border shadow-sm">
-                                                <h4 class="text-xs font-semibold text-brand-textSecondary uppercase mb-2">Risk Factors</h4>
-                                                <ul class="space-y-2 text-sm text-brand-textPrimary">
-                                                    <li class="flex items-start gap-2"><i class="fa-solid fa-triangle-exclamation text-brand-critical mt-0.5"></i> Contract expires in 45 days</li>
-                                                    <li class="flex items-start gap-2"><i class="fa-solid fa-arrow-trend-down text-brand-critical mt-0.5"></i> 30% drop in platform usage</li>
-                                                </ul>
-                                            </div>
-                                            <div class="bg-brand-cardBg p-4 rounded-lg border border-brand-border shadow-sm">
-                                                <h4 class="text-xs font-semibold text-brand-textSecondary uppercase mb-2">Recent Engagement</h4>
-                                                <ul class="space-y-2 text-sm text-brand-textPrimary">
-                                                    <li class="flex items-start gap-2"><i class="fa-regular fa-envelope text-brand-textSecondary mt-0.5"></i> Sent renewal proposal (Oct 12)</li>
-                                                    <li class="flex items-start gap-2"><i class="fa-solid fa-phone text-brand-textSecondary mt-0.5"></i> Call with Procurement (Oct 10)</li>
-                                                </ul>
-                                            </div>
-                                            <div class="bg-brand-cardBg p-4 rounded-lg border border-brand-border shadow-sm flex flex-col justify-center items-center text-center">
-                                                <h4 class="text-xs font-semibold text-brand-textSecondary uppercase mb-2">Recommended Action</h4>
-                                                <button class="px-4 py-2 bg-brand-critical/10 text-brand-critical border border-brand-critical/20 rounded-md text-sm font-medium hover:bg-brand-critical/20 transition-colors w-full">
-                                                    Schedule Executive Review
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </td>
-                            </tr>
-
-                            <!-- Row 3 -->
-                            <tr class="hover:bg-brand-bg transition-colors cursor-pointer border-l-4 border-l-transparent">
-                                <td class="px-4 py-4 text-center text-brand-textSecondary hover:text-brand-primary transition-colors">
-                                    <button><i class="fa-solid fa-chevron-right text-xs"></i></button>
-                                </td>
-                                <td class="px-4 py-4">
-                                    <div class="flex items-center gap-3">
-                                        <div class="w-8 h-8 rounded bg-semantic-amber/10 text-semantic-amber flex items-center justify-center font-bold text-xs">CV</div>
-                                        <div>
-                                            <p class="font-medium text-brand-textPrimary">CVS Health Network</p>
-                                            <p class="text-xs text-brand-textSecondary">ID: ACC-5519</p>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="px-4 py-4 text-brand-textSecondary">Pharmacy Chain</td>
-                                <td class="px-4 py-4">
-                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-semantic-amber/10 text-semantic-amber border border-semantic-amber/20">
-                                        <span class="w-1.5 h-1.5 rounded-full bg-semantic-amber"></span> Opportunity
-                                    </span>
-                                </td>
-                                <td class="px-4 py-4 font-medium text-brand-textPrimary">$2.4M</td>
-                                <td class="px-4 py-4 text-brand-textSecondary">Elena Rodriguez</td>
-                                <td class="px-4 py-4 text-brand-textSecondary text-xs">1 week ago</td>
-                                <td class="px-4 py-4 text-right">
-                                    <button class="text-brand-textSecondary hover:text-brand-primary p-1"><i class="fa-solid fa-ellipsis-vertical"></i></button>
-                                </td>
-                            </tr>
-
-                            <!-- Row 4 -->
-                            <tr class="hover:bg-brand-bg transition-colors cursor-pointer border-l-4 border-l-transparent">
-                                <td class="px-4 py-4 text-center text-brand-textSecondary hover:text-brand-primary transition-colors">
-                                    <button><i class="fa-solid fa-chevron-right text-xs"></i></button>
-                                </td>
-                                <td class="px-4 py-4">
-                                    <div class="flex items-center gap-3">
-                                        <div class="w-8 h-8 rounded bg-semantic-violet/10 text-semantic-violet flex items-center justify-center font-bold text-xs">NM</div>
-                                        <div>
-                                            <p class="font-medium text-brand-textPrimary">National MedSupply</p>
-                                            <p class="text-xs text-brand-textSecondary">ID: ACC-2284</p>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="px-4 py-4 text-brand-textSecondary">Distributor</td>
-                                <td class="px-4 py-4">
-                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-semantic-violet/10 text-semantic-violet border border-semantic-violet/20">
-                                        <span class="w-1.5 h-1.5 rounded-full bg-semantic-violet"></span> Strategic
-                                    </span>
-                                </td>
-                                <td class="px-4 py-4 font-medium text-brand-textPrimary">$5.1M</td>
-                                <td class="px-4 py-4 text-brand-textSecondary">Sarah Jenkins</td>
-                                <td class="px-4 py-4 text-brand-textSecondary text-xs">Yesterday</td>
-                                <td class="px-4 py-4 text-right">
-                                    <button class="text-brand-textSecondary hover:text-brand-primary p-1"><i class="fa-solid fa-ellipsis-vertical"></i></button>
-                                </td>
-                            </tr>
-                            
-                             <!-- Row 5 -->
-                             <tr class="hover:bg-brand-bg transition-colors cursor-pointer border-l-4 border-l-transparent">
-                                <td class="px-4 py-4 text-center text-brand-textSecondary hover:text-brand-primary transition-colors">
-                                    <button><i class="fa-solid fa-chevron-right text-xs"></i></button>
-                                </td>
-                                <td class="px-4 py-4">
-                                    <div class="flex items-center gap-3">
-                                        <div class="w-8 h-8 rounded bg-semantic-emerald/10 text-semantic-emerald flex items-center justify-center font-bold text-xs">WG</div>
-                                        <div>
-                                            <p class="font-medium text-brand-textPrimary">Walgreens Corp</p>
-                                            <p class="text-xs text-brand-textSecondary">ID: ACC-1193</p>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="px-4 py-4 text-brand-textSecondary">Pharmacy Chain</td>
-                                <td class="px-4 py-4">
-                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-semantic-emerald/10 text-semantic-emerald border border-semantic-emerald/20">
-                                        <span class="w-1.5 h-1.5 rounded-full bg-semantic-emerald"></span> Growth
-                                    </span>
-                                </td>
-                                <td class="px-4 py-4 font-medium text-brand-textPrimary">$3.8M</td>
-                                <td class="px-4 py-4 text-brand-textSecondary">Marcus Thorne</td>
-                                <td class="px-4 py-4 text-brand-textSecondary text-xs">3 days ago</td>
-                                <td class="px-4 py-4 text-right">
-                                    <button class="text-brand-textSecondary hover:text-brand-primary p-1"><i class="fa-solid fa-ellipsis-vertical"></i></button>
-                                </td>
-                            </tr>
+                            <!-- Dynamic Rows Injected by JS -->
                         </tbody>
                     </table>
                 </div>
                 
                 <!-- Pagination -->
                 <div class="p-4 border-t border-brand-tableBorder flex items-center justify-between bg-brand-cardBg">
-                    <p class="text-sm text-brand-textSecondary">Showing <span class="font-medium text-brand-textPrimary">1</span> to <span class="font-medium text-brand-textPrimary">5</span> of <span class="font-medium text-brand-textPrimary">1,248</span> results</p>
+                    <p id="pagination-status" class="text-sm text-brand-textSecondary">Showing <span class="font-medium text-brand-textPrimary">0</span> to <span class="font-medium text-brand-textPrimary">0</span> of <span class="font-medium text-brand-textPrimary">0</span> results</p>
                     <div class="flex items-center gap-2">
-                        <button class="px-3 py-1.5 border border-brand-border rounded-md text-sm text-brand-textSecondary hover:bg-brand-bg disabled:opacity-50 disabled:cursor-not-allowed" disabled>Previous</button>
-                        <button class="px-3 py-1.5 border border-brand-border rounded-md text-sm text-brand-textSecondary hover:bg-brand-bg">Next</button>
+                        <button id="btn-prev-page" class="px-3 py-1.5 border border-brand-border rounded-md text-sm text-brand-textSecondary hover:bg-brand-bg disabled:opacity-50 disabled:cursor-not-allowed" disabled>Previous</button>
+                        <button id="btn-next-page" class="px-3 py-1.5 border border-brand-border rounded-md text-sm text-brand-textSecondary hover:bg-brand-bg disabled:opacity-50 disabled:cursor-not-allowed">Next</button>
                     </div>
                 </div>
             </div>
@@ -454,13 +286,13 @@
                 <!-- Drawer Header -->
                 <div class="p-5 border-b border-brand-tableBorder flex items-start justify-between bg-brand-bg/50">
                     <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-lg bg-brand-dark text-white flex items-center justify-center font-bold text-lg shadow-sm">MC</div>
+                        <div id="details-initials" class="w-10 h-10 rounded-lg bg-brand-dark text-white flex items-center justify-center font-bold text-lg shadow-sm">MC</div>
                         <div>
-                            <h2 class="text-lg font-bold text-brand-textPrimary leading-tight">Mercy Care Network</h2>
-                            <p class="text-sm text-brand-textSecondary">Hospital Chain • North America</p>
+                            <h2 id="details-name" class="text-lg font-bold text-brand-textPrimary leading-tight">Mercy Care Network</h2>
+                            <p id="details-subtitle" class="text-sm text-brand-textSecondary">Hospital Chain • North America</p>
                         </div>
                     </div>
-                    <button class="text-brand-textSecondary hover:text-brand-textPrimary transition-colors p-1 rounded-md hover:bg-brand-bg">
+                        <button id="btn-close-drawer" class="text-brand-textSecondary hover:text-brand-textPrimary transition-colors p-1 rounded-md hover:bg-brand-bg">
                         <i class="fa-solid fa-xmark"></i>
                     </button>
                 </div>
@@ -472,13 +304,13 @@
                     <div class="grid grid-cols-2 gap-4">
                         <div class="p-3 bg-brand-bg rounded-lg border border-brand-border/50">
                             <p class="text-xs text-brand-textSecondary font-medium mb-1">Status Score</p>
-                            <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-medium bg-semantic-emerald/10 text-semantic-emerald border border-semantic-emerald/20">
+                            <span id="details-status" class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-medium bg-semantic-emerald/10 text-semantic-emerald border border-semantic-emerald/20">
                                 <span class="w-1.5 h-1.5 rounded-full bg-semantic-emerald"></span> Growth (85/100)
                             </span>
                         </div>
                         <div class="p-3 bg-brand-bg rounded-lg border border-brand-border/50">
                             <p class="text-xs text-brand-textSecondary font-medium mb-1">Annual Revenue</p>
-                            <p class="text-sm font-bold text-brand-textPrimary">$1.2M</p>
+                            <p id="details-revenue" class="text-sm font-bold text-brand-textPrimary">$1.2M</p>
                         </div>
                     </div>
 
@@ -488,19 +320,11 @@
                             <i class="fa-solid fa-wand-magic-sparkles text-brand-primary"></i> AI Insight
                         </h3>
                         <div class="bg-brand-primary/10 p-4 rounded-lg border border-brand-primary/20 text-sm text-brand-textPrimary leading-relaxed">
-                            <p>Strong expansion potential detected. Platform utilization increased by 15% in Q3. Recommendation: Initiate cross-sell campaign for new Cardiovascular device line before FY budgeting cycle begins in November.</p>
+                            <p id="details-ai-text">Strong expansion potential detected. Platform utilization increased by 15% in Q3. Recommendation: Initiate cross-sell campaign for new Cardiovascular device line before FY budgeting cycle begins in November.</p>
                         </div>
                     </div>
 
                     <div class="h-px bg-brand-tableBorder"></div>
-
-                    <!-- Usage Trend Chart Mini -->
-                    <div>
-                        <h3 class="text-xs font-bold text-brand-textSecondary uppercase tracking-wider mb-3">Platform Usage Trend (30 Days)</h3>
-                        <div class="h-32 w-full bg-brand-bg rounded-lg border border-brand-border/50 flex items-center justify-center p-2">
-                            <div id="mini-trend-chart" class="w-full h-full"></div>
-                        </div>
-                    </div>
 
                     <div class="h-px bg-brand-tableBorder"></div>
 
@@ -528,7 +352,7 @@
 
                 <!-- Drawer Footer -->
                 <div class="p-5 border-t border-brand-tableBorder bg-brand-cardBg">
-                    <a href="3-BI Platform - Account Deep-Div.html" class="w-full py-2.5 bg-brand-primary text-brand-dark rounded-lg text-sm font-medium hover:bg-brand-primary/90 transition-colors shadow-sm flex items-center justify-center gap-2">
+                    <a id="btn-view-deep-dive" href="3-BI Platform - Account Deep-Div.html" class="w-full py-2.5 bg-brand-primary text-brand-dark rounded-lg text-sm font-medium hover:bg-brand-primary/90 transition-colors shadow-sm flex items-center justify-center gap-2">
                         View Deep-Dive <i class="fa-solid fa-arrow-right text-xs"></i>
                     </a>
                 </div>
@@ -558,6 +382,7 @@
     <script src="data/mock-data.js"></script>
     <script src="src/data-loader.js"></script>
     <script src="src/charts.js"></script>
+    <script src="src/openai-insights.js"></script>
     <script src="src/account-explorer.js"></script>
 </body>
 </html>

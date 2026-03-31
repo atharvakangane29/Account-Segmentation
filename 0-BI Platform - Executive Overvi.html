@@ -124,21 +124,47 @@
             <!-- Global Filters / Actions -->
             <div class="flex flex-wrap items-center gap-3">
                 <div class="flex items-center bg-brand-cardBg border border-brand-border rounded-lg shadow-sm p-1">
-                    <button class="px-3 py-1.5 text-xs font-medium bg-brand-primary/20 text-brand-textPrimary rounded-md">Q3 2026</button>
-                    <button class="px-3 py-1.5 text-xs font-medium text-brand-textSecondary hover:text-brand-textPrimary rounded-md">YTD</button>
-                    <button class="px-3 py-1.5 text-xs font-medium text-brand-textSecondary hover:text-brand-textPrimary rounded-md">12M</button>
+                    <button id="range-q3" type="button" class="px-3 py-1.5 text-xs font-medium bg-brand-primary/20 text-brand-textPrimary rounded-md">Q3 2026</button>
+                    <button id="range-ytd" type="button" class="px-3 py-1.5 text-xs font-medium text-brand-textSecondary hover:text-brand-textPrimary rounded-md">YTD</button>
+                    <button id="range-12m" type="button" class="px-3 py-1.5 text-xs font-medium text-brand-textSecondary hover:text-brand-textPrimary rounded-md">12M</button>
                 </div>
                 
-                <button class="flex items-center gap-2 px-3 py-2 bg-brand-cardBg border border-brand-border rounded-lg shadow-sm text-sm font-medium text-brand-textPrimary hover:bg-brand-bg transition-colors">
+                <button id="btn-toggle-filters" type="button" class="flex items-center gap-2 px-3 py-2 bg-brand-cardBg border border-brand-border rounded-lg shadow-sm text-sm font-medium text-brand-textPrimary hover:bg-brand-bg transition-colors">
                     <i class="fa-solid fa-filter text-brand-textSecondary"></i>
                     Filters
                 </button>
                 
-                <button class="flex items-center gap-2 px-3 py-2 bg-brand-primary border border-transparent rounded-lg shadow-sm text-sm font-medium text-brand-dark hover:bg-brand-primary/90 transition-colors">
+                <button id="btn-export-report" type="button" class="flex items-center gap-2 px-3 py-2 bg-brand-primary border border-transparent rounded-lg shadow-sm text-sm font-medium text-brand-dark hover:bg-brand-primary/90 transition-colors">
                     <i class="fa-solid fa-download"></i>
                     Export Report
                 </button>
             </div>
+        </div>
+
+        <div id="executive-filter-panel" class="hidden mb-6 rounded-xl border border-brand-border bg-brand-cardBg shadow-sm p-5">
+            <div class="grid gap-4 md:grid-cols-3">
+                <select class="border border-brand-border rounded-lg px-3 py-2 bg-white text-sm text-brand-textPrimary focus:ring-brand-primary focus:border-brand-primary" id="exec-filter-region">
+                    <option>All Regions</option>
+                    <option>North America</option>
+                    <option>EMEA</option>
+                    <option>APAC</option>
+                </select>
+                <select class="border border-brand-border rounded-lg px-3 py-2 bg-white text-sm text-brand-textPrimary focus:ring-brand-primary focus:border-brand-primary" id="exec-filter-segment">
+                    <option>All Segments</option>
+                    <option>Growth</option>
+                    <option>Opportunity</option>
+                    <option>At-Risk</option>
+                    <option>Strategic</option>
+                </select>
+                <select class="border border-brand-border rounded-lg px-3 py-2 bg-white text-sm text-brand-textPrimary focus:ring-brand-primary focus:border-brand-primary" id="exec-filter-metric">
+                    <option>All Metrics</option>
+                    <option>Total Revenue</option>
+                    <option>Growth Potential</option>
+                    <option>Churn Risk</option>
+                </select>
+            </div>
+            <p class="mt-3 text-sm text-brand-textSecondary">Use the filters panel to preview the dashboard state. It is currently a live UI toggle for this executive experience.</p>
+        </div>
         </div>
 
         <!-- Dashboard Grid -->
@@ -272,13 +298,15 @@
                 <div class="p-5 border-b border-brand-tableBorder flex items-center justify-between">
                     <div>
                         <h2 class="text-lg font-semibold text-brand-textPrimary">Revenue Drivers Analysis</h2>
-                        <p class="text-sm text-brand-textSecondary">Net change in revenue Q2 to Q3</p>
+                        <p id="waterfall-subtitle" class="text-sm text-brand-textSecondary">Net change in revenue Q2 to Q3 2026</p>
                     </div>
                     <button class="text-brand-textSecondary hover:text-brand-textPrimary"><i class="fa-solid fa-ellipsis"></i></button>
                 </div>
                 <div class="p-5 flex-1 relative min-h-[400px]">
-                    <div id="waterfall-chart" class="w-full h-[400px]"></div>
+                    <div id="waterfall-chart" class="w-full h-[360px]"></div>
                 </div>
+                <!-- Dynamic Bar Detail Panel (populated on chart bar click) -->
+                <div id="waterfall-bar-detail" class="hidden border-t border-brand-tableBorder"></div>
             </div>
 
             <!-- Segment Donut Chart (Right - 4 cols) -->
@@ -341,10 +369,10 @@
                             <p class="text-sm text-brand-textSecondary">Synthesized strategic recommendations based on Q3 data</p>
                         </div>
                     </div>
-                    <button class="text-brand-textSecondary hover:text-white"><i class="fa-solid fa-chevron-up"></i></button>
+                    <button id="btn-toggle-ai" type="button" class="text-brand-textSecondary hover:text-white"><i class="fa-solid fa-chevron-up"></i></button>
                 </div>
                 
-                <div class="p-6 grid grid-cols-1 md:grid-cols-3 gap-6 bg-brand-bg">
+                <div id="exec-ai-cards" class="p-6 grid grid-cols-1 md:grid-cols-3 gap-6 bg-brand-bg">
                     
                     <!-- Insight Card 1 -->
                     <div class="bg-brand-cardBg p-5 rounded-lg border border-brand-border shadow-sm relative">
@@ -352,7 +380,7 @@
                             <i class="fa-solid fa-arrow-trend-up text-brand-primary text-xs"></i>
                         </div>
                         <h3 class="text-sm font-bold text-brand-textPrimary mb-2">Pharmacy Chain Expansion</h3>
-                        <p class="text-sm text-brand-textSecondary leading-relaxed mb-4">
+                        <p id="exec-ai-text-1" class="text-sm text-brand-textSecondary leading-relaxed mb-4">
                             Mid-tier pharmacy chains show a 15% faster adoption rate of new cardiovascular lines compared to hospitals. Recommend shifting 20% of Q4 marketing budget to this segment.
                         </p>
                         <a href="2-BI Platform - Account Explorer.html" class="text-sm font-medium text-brand-primary hover:text-brand-primary/80 flex items-center gap-1">
@@ -366,7 +394,7 @@
                             <i class="fa-solid fa-triangle-exclamation text-brand-critical text-xs"></i>
                         </div>
                         <h3 class="text-sm font-bold text-brand-textPrimary mb-2">Hospital Network Churn Risk</h3>
-                        <p class="text-sm text-brand-textSecondary leading-relaxed mb-4">
+                        <p id="exec-ai-text-2" class="text-sm text-brand-textSecondary leading-relaxed mb-4">
                             3 major hospital networks in the Northeast region are approaching contract renewals within 60 days while displaying declining engagement metrics.
                         </p>
                         <a href="2-BI Platform - Account Explorer.html" class="text-sm font-medium text-brand-primary hover:text-brand-primary/80 flex items-center gap-1">
@@ -380,7 +408,7 @@
                             <i class="fa-solid fa-lightbulb text-brand-lowSev text-xs"></i>
                         </div>
                         <h3 class="text-sm font-bold text-brand-textPrimary mb-2">Untapped Distributor Potential</h3>
-                        <p class="text-sm text-brand-textSecondary leading-relaxed mb-4">
+                        <p id="exec-ai-text-3" class="text-sm text-brand-textSecondary leading-relaxed mb-4">
                             Cross-selling opportunities identified in 45 distributor accounts that currently purchase single-line products. Estimated pipeline value: $12.4M.
                         </p>
                         <a href="4-BI Platform - Campaign Hub.html" class="text-sm font-medium text-brand-primary hover:text-brand-primary/80 flex items-center gap-1">
@@ -423,7 +451,7 @@
                                 <td class="p-4 text-brand-textSecondary">Contract Renewed (+15% Vol)</td>
                                 <td class="p-4 font-medium text-brand-textPrimary">$2.4M</td>
                                 <td class="p-4 text-right">
-                                    <button class="text-brand-textSecondary hover:text-brand-primary"><i class="fa-solid fa-arrow-up-right-from-square"></i></button>
+                                    <button type="button" data-navigate-target="2-BI Platform - Account Explorer.html" class="text-brand-textSecondary hover:text-brand-primary"><i class="fa-solid fa-arrow-up-right-from-square"></i></button>
                                 </td>
                             </tr>
                             <tr class="hover:bg-brand-bg transition-colors">
@@ -437,7 +465,7 @@
                                 <td class="p-4 text-brand-textSecondary">Competitor bid detected</td>
                                 <td class="p-4 font-medium text-brand-textPrimary">$5.1M</td>
                                 <td class="p-4 text-right">
-                                    <button class="text-brand-textSecondary hover:text-brand-primary"><i class="fa-solid fa-arrow-up-right-from-square"></i></button>
+                                    <button type="button" data-navigate-target="2-BI Platform - Account Explorer.html" class="text-brand-textSecondary hover:text-brand-primary"><i class="fa-solid fa-arrow-up-right-from-square"></i></button>
                                 </td>
                             </tr>
                             <tr class="hover:bg-brand-bg transition-colors">
@@ -451,7 +479,7 @@
                                 <td class="p-4 text-brand-textSecondary">Inquired about new cardio line</td>
                                 <td class="p-4 font-medium text-brand-textPrimary">$1.8M</td>
                                 <td class="p-4 text-right">
-                                    <button class="text-brand-textSecondary hover:text-brand-primary"><i class="fa-solid fa-arrow-up-right-from-square"></i></button>
+                                    <button type="button" data-navigate-target="2-BI Platform - Account Explorer.html" class="text-brand-textSecondary hover:text-brand-primary"><i class="fa-solid fa-arrow-up-right-from-square"></i></button>
                                 </td>
                             </tr>
                         </tbody>
@@ -481,6 +509,7 @@
     <script src="data/mock-data.js"></script>
     <script src="src/data-loader.js"></script>
     <script src="src/charts.js"></script>
+    <script src="src/openai-insights.js"></script>
     <script src="src/executive-overview.js"></script>
 </body>
 </html>

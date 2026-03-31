@@ -381,128 +381,122 @@
 
                     <!-- Model Selection -->
                     <div class="bg-brand-cardBg rounded-xl border border-brand-border shadow-sm p-5">
-                        <h3 class="text-sm font-bold text-brand-textPrimary mb-4 flex items-center gap-2">
-                            <i class="fa-solid fa-microchip text-brand-primary"></i> Ensemble Model Type
-                        </h3>
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-sm font-bold text-brand-textPrimary flex items-center gap-2">
+                                <i class="fa-solid fa-microchip text-brand-primary"></i> Algorithm Selection
+                            </h3>
+                            <button class="text-xs text-brand-primary hover:underline flex items-center gap-1">
+                                <i class="fa-solid fa-circle-question"></i> Explain My Model
+                            </button>
+                        </div>
                         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                            <label class="relative flex flex-col p-4 border border-brand-primary bg-brand-primary/5 rounded-lg cursor-pointer">
-                                <input type="radio" name="model_type" value="xgboost_glmm" class="sr-only" checked>
-                                <div class="flex items-center justify-between mb-2">
-                                    <span class="text-sm font-bold text-brand-textPrimary">XGBoost + GLMM</span>
-                                    <i class="fa-solid fa-circle-check text-brand-primary text-xs"></i>
+                            <label class="relative flex flex-col p-3 border border-brand-primary bg-brand-primary/5 rounded-lg cursor-pointer transition-all" onclick="switchModel('xgboost')">
+                                <input type="radio" name="model_type" value="xgboost" class="sr-only" checked>
+                                <div class="flex items-center justify-between mb-1">
+                                    <span class="text-sm font-bold text-brand-textPrimary">XGBoost</span>
+                                    <i class="fa-solid fa-circle-check text-brand-primary text-xs hidden check-icon"></i>
                                 </div>
-                                <span class="text-xs text-brand-textSecondary">Best for mixed data types. Recommended for pharma account data.</span>
-                                <span class="mt-2 text-xs font-medium text-brand-primary">⭐ Recommended</span>
+                                <div class="text-[10px] space-y-1 mt-1 text-brand-textSecondary">
+                                    <p class="text-[#10b981]"><i class="fa-solid fa-check mr-1"></i> Handles non-linear data</p>
+                                    <p class="text-[#10b981]"><i class="fa-solid fa-check mr-1"></i> High accuracy</p>
+                                    <p class="text-[#A35139]"><i class="fa-solid fa-triangle-exclamation mr-1"></i> Overfits if too deep</p>
+                                </div>
+                                <span class="mt-2 text-[10px] font-bold uppercase tracking-wider text-brand-primary">Recommended</span>
                             </label>
-                            <label class="relative flex flex-col p-4 border border-brand-border bg-white rounded-lg cursor-pointer hover:border-brand-primary/50 transition-colors">
-                                <input type="radio" name="model_type" value="random_forest" class="sr-only">
-                                <div class="flex items-center justify-between mb-2">
+                            <label class="relative flex flex-col p-3 border border-brand-border bg-white rounded-lg cursor-pointer hover:border-brand-primary/50 transition-all" onclick="switchModel('rf')">
+                                <input type="radio" name="model_type" value="rf" class="sr-only">
+                                <div class="flex items-center justify-between mb-1">
                                     <span class="text-sm font-bold text-brand-textPrimary">Random Forest</span>
+                                    <i class="fa-solid fa-circle-check text-brand-primary text-xs hidden check-icon"></i>
                                 </div>
-                                <span class="text-xs text-brand-textSecondary">High interpretability. Good for smaller datasets (&lt;500 accounts).</span>
+                                <div class="text-[10px] space-y-1 mt-1 text-brand-textSecondary">
+                                    <p class="text-[#10b981]"><i class="fa-solid fa-check mr-1"></i> High interpretability</p>
+                                    <p class="text-[#10b981]"><i class="fa-solid fa-check mr-1"></i> Stable predictions</p>
+                                    <p class="text-[#A35139]"><i class="fa-solid fa-triangle-exclamation mr-1"></i> Slower with many trees</p>
+                                </div>
                             </label>
-                            <label class="relative flex flex-col p-4 border border-brand-border bg-white rounded-lg cursor-pointer hover:border-brand-primary/50 transition-colors">
-                                <input type="radio" name="model_type" value="kmeans_hybrid" class="sr-only">
-                                <div class="flex items-center justify-between mb-2">
-                                    <span class="text-sm font-bold text-brand-textPrimary">K-Means Hybrid</span>
+                            <label class="relative flex flex-col p-3 border border-brand-border bg-white rounded-lg cursor-pointer hover:border-brand-primary/50 transition-all" onclick="switchModel('kmeans')">
+                                <input type="radio" name="model_type" value="kmeans" class="sr-only">
+                                <div class="flex items-center justify-between mb-1">
+                                    <span class="text-sm font-bold text-brand-textPrimary">K-Means</span>
+                                    <i class="fa-solid fa-circle-check text-brand-primary text-xs hidden check-icon"></i>
                                 </div>
-                                <span class="text-xs text-brand-textSecondary">Unsupervised clustering. Use when segment labels are unknown.</span>
+                                <div class="text-[10px] space-y-1 mt-1 text-brand-textSecondary">
+                                    <p class="text-[#10b981]"><i class="fa-solid fa-check mr-1"></i> Unsupervised clustering</p>
+                                    <p class="text-[#10b981]"><i class="fa-solid fa-check mr-1"></i> Discovers hidden segments</p>
+                                    <p class="text-[#A35139]"><i class="fa-solid fa-triangle-exclamation mr-1"></i> Requires scaling</p>
+                                </div>
                             </label>
                         </div>
                     </div>
 
                     <!-- Hyperparameter Sliders -->
+                    <div class="bg-[#faf7f2] border border-[#f0e6d8] shadow-sm rounded-xl p-4 flex flex-col sm:flex-row gap-4 items-center justify-between">
+
+                    <!-- Preset Buttons -->
+                    <div class="flex gap-2">
+                        <button onclick="applyPreset('fast')" id="preset-fast"
+                            class="px-3 py-1.5 rounded-md bg-white text-black text-sm font-medium hover:bg-gray-100 transition border border-[#e5dacb]">
+                            Fast
+                        </button>
+
+                        <button onclick="applyPreset('balanced')" id="preset-balanced"
+                            class="px-3 py-1.5 rounded-md bg-white text-black text-sm font-medium hover:bg-gray-100 transition border border-[#e5dacb]">
+                            Balanced
+                        </button>
+
+                        <button onclick="applyPreset('accurate')" id="preset-accurate"
+                            class="px-3 py-1.5 rounded-md bg-white text-black text-sm font-medium hover:bg-gray-100 transition border border-[#e5dacb]">
+                            High Accuracy
+                        </button>
+                    </div>
+
+                    <!-- Metrics -->
+                    <div class="flex items-center gap-8 text-sm">
+
+                        <!-- Accuracy -->
+                        <div class="flex flex-col items-center">
+                            <span class="text-gray-500 mb-1">Accuracy</span>
+                            <span id="impact-acc" class="font-semibold text-green-600 flex items-center gap-1">
+                                High <i class="fa-solid fa-arrow-up text-xs"></i>
+                            </span>
+                        </div>
+
+                        <!-- Overfitting -->
+                        <div class="flex flex-col items-center">
+                            <span class="text-gray-500 mb-1">Overfitting Risk</span>
+                            <span id="impact-overfit" class="font-semibold text-amber-600">
+                                Medium
+                            </span>
+                        </div>
+
+                        <!-- Training Time -->
+                        <div class="flex flex-col items-center">
+                            <span class="text-gray-500 mb-1">Training Time</span>
+                            <span id="impact-speed" class="font-semibold text-gray-800">
+                                ~45s
+                            </span>
+                        </div>
+
+                    </div>
+                </div>
+
                     <div class="bg-brand-cardBg rounded-xl border border-brand-border shadow-sm p-5">
                         <div class="flex items-center justify-between mb-5">
                             <h3 class="text-sm font-bold text-brand-textPrimary flex items-center gap-2">
-                                <i class="fa-solid fa-sliders text-brand-primary"></i> Hyperparameters
+                                <i class="fa-solid fa-sliders text-brand-primary"></i> Parameter Tuning
                             </h3>
-                            <button onclick="resetHyperparams()" class="text-xs text-brand-textSecondary hover:text-brand-primary font-medium transition-colors">
-                                <i class="fa-solid fa-rotate-left mr-1"></i> Reset Defaults
-                            </button>
-                        </div>
-
-                        <div class="space-y-5">
-                            <!-- n_estimators -->
-                            <div>
-                                <div class="flex justify-between text-sm mb-1.5">
-                                    <div>
-                                        <span class="font-medium text-brand-textPrimary">Number of Estimators</span>
-                                        <span class="text-xs text-brand-textSecondary ml-2">(n_estimators)</span>
-                                    </div>
-                                    <span class="font-mono text-brand-primary font-bold" id="hp-estimators-val">300</span>
-                                </div>
-                                <input type="range" min="50" max="1000" value="300" step="50" class="hp-slider w-full" id="hp-estimators"
-                                    oninput="document.getElementById('hp-estimators-val').textContent = this.value">
-                                <div class="flex justify-between text-xs text-brand-textSecondary mt-1">
-                                    <span>50 (fast, less accurate)</span><span>1000 (slow, more accurate)</span>
-                                </div>
-                            </div>
-
-                            <!-- max_depth -->
-                            <div>
-                                <div class="flex justify-between text-sm mb-1.5">
-                                    <div>
-                                        <span class="font-medium text-brand-textPrimary">Max Tree Depth</span>
-                                        <span class="text-xs text-brand-textSecondary ml-2">(max_depth)</span>
-                                    </div>
-                                    <span class="font-mono text-brand-primary font-bold" id="hp-depth-val">6</span>
-                                </div>
-                                <input type="range" min="2" max="12" value="6" step="1" class="hp-slider w-full" id="hp-depth"
-                                    oninput="document.getElementById('hp-depth-val').textContent = this.value">
-                                <div class="flex justify-between text-xs text-brand-textSecondary mt-1">
-                                    <span>2 (underfitting risk)</span><span>12 (overfitting risk)</span>
-                                </div>
-                            </div>
-
-                            <!-- learning_rate -->
-                            <div>
-                                <div class="flex justify-between text-sm mb-1.5">
-                                    <div>
-                                        <span class="font-medium text-brand-textPrimary">Learning Rate</span>
-                                        <span class="text-xs text-brand-textSecondary ml-2">(eta)</span>
-                                    </div>
-                                    <span class="font-mono text-brand-primary font-bold" id="hp-lr-val">0.10</span>
-                                </div>
-                                <input type="range" min="1" max="30" value="10" step="1" class="hp-slider w-full" id="hp-lr"
-                                    oninput="document.getElementById('hp-lr-val').textContent = '0.' + (this.value < 10 ? '0' + this.value : this.value)">
-                                <div class="flex justify-between text-xs text-brand-textSecondary mt-1">
-                                    <span>0.01 (conservative)</span><span>0.30 (aggressive)</span>
-                                </div>
-                            </div>
-
-                            <!-- train/test split -->
-                            <div>
-                                <div class="flex justify-between text-sm mb-1.5">
-                                    <div>
-                                        <span class="font-medium text-brand-textPrimary">Train / Test Split</span>
-                                        <span class="text-xs text-brand-textSecondary ml-2">(test_size)</span>
-                                    </div>
-                                    <span class="font-mono text-brand-primary font-bold" id="hp-split-val">80 / 20</span>
-                                </div>
-                                <input type="range" min="60" max="90" value="80" step="5" class="hp-slider w-full" id="hp-split"
-                                    oninput="document.getElementById('hp-split-val').textContent = this.value + ' / ' + (100 - this.value)">
-                                <div class="flex justify-between text-xs text-brand-textSecondary mt-1">
-                                    <span>60/40</span><span>90/10</span>
-                                </div>
-                            </div>
-
-                            <!-- min_samples_leaf -->
-                            <div>
-                                <div class="flex justify-between text-sm mb-1.5">
-                                    <div>
-                                        <span class="font-medium text-brand-textPrimary">Min Samples Leaf</span>
-                                        <span class="text-xs text-brand-textSecondary ml-2">(min_child_weight)</span>
-                                    </div>
-                                    <span class="font-mono text-brand-primary font-bold" id="hp-leaf-val">5</span>
-                                </div>
-                                <input type="range" min="1" max="20" value="5" step="1" class="hp-slider w-full" id="hp-leaf"
-                                    oninput="document.getElementById('hp-leaf-val').textContent = this.value">
-                                <div class="flex justify-between text-xs text-brand-textSecondary mt-1">
-                                    <span>1 (more splits)</span><span>20 (smoother)</span>
-                                </div>
+                            <div class="flex items-center gap-3">
+                                <span id="dependency-warning" class="hidden text-[10px] text-[#A35139] bg-[#A35139]/10 px-2 py-1 rounded flex items-center gap-1">
+                                    <i class="fa-solid fa-triangle-exclamation"></i> Check min_samples_leaf
+                                </span>
+                                <button onclick="resetHyperparams()" class="text-xs text-brand-textSecondary hover:text-brand-primary font-medium transition-colors">
+                                    <i class="fa-solid fa-rotate-left mr-1"></i> Reset
+                                </button>
                             </div>
                         </div>
+
+                        <div id="dynamic-params-container" class="space-y-4"></div>
                     </div>
 
                     <!-- Segment Threshold Config -->
@@ -833,6 +827,241 @@
     </footer>
 
 <script>
+
+function applyPreset(type) {
+    document.querySelectorAll("[id^='preset-']").forEach(btn => {
+        btn.classList.remove("bg-[#f59e0b]", "text-white");
+        btn.classList.add("bg-white", "text-gray-700");
+    });
+
+    const active = document.getElementById(`preset-${type}`);
+    active.classList.remove("bg-white", "text-gray-700");
+    active.classList.add("bg-[#f59e0b]", "text-white");
+}
+
+// ============================================================
+// DYNAMIC MODEL CONFIGURATION & IMPACT LOGIC
+// ============================================================
+
+const MODEL_CONFIGS = {
+    xgboost: {
+        name: "XGBoost",
+        icon: "fa-microchip",
+        params: [
+            { id: 'estimators', label: 'Number of Trees', symbol: 'n_estimators', min: 50, max: 1000, step: 50, desc: 'Controls the number of decision trees in the ensemble.', impactHigh: '⬆ Better accuracy (but slower)', impactLow: '⬇ Faster (but less stable)' },
+            { id: 'depth', label: 'Max Tree Depth', symbol: 'max_depth', min: 2, max: 12, step: 1, desc: 'Controls how deep each tree grows.', impactHigh: '⬆ Captures complex patterns (High overfit risk)', impactLow: '⬇ Misses nuance (Underfitting risk)' },
+            { id: 'lr', label: 'Learning Rate', symbol: 'eta', min: 1, max: 30, step: 1, isDecimal: true, desc: 'Step size shrinkage used to prevent overfitting.', impactHigh: '⬆ Aggressive updates (Faster, less precise)', impactLow: '⬇ Conservative updates (Slower, highly precise)' },
+            { id: 'leaf', label: 'Min Samples Leaf', symbol: 'min_child_weight', min: 1, max: 20, step: 1, desc: 'Minimum sum of instance weight needed in a child node.', impactHigh: '⬆ Smoother boundaries (Prevents overfitting)', impactLow: '⬇ More splits (Allows overfitting)' }
+        ],
+        presets: {
+            fast: { estimators: 100, depth: 4, lr: 20, leaf: 10 },
+            balanced: { estimators: 300, depth: 6, lr: 10, leaf: 5 },
+            accurate: { estimators: 800, depth: 9, lr: 5, leaf: 2 }
+        }
+    },
+    rf: {
+        name: "Random Forest",
+        icon: "fa-tree",
+        params: [
+            { id: 'estimators', label: 'Number of Trees', symbol: 'n_estimators', min: 50, max: 1000, step: 50, desc: 'Number of independent trees averaged together.', impactHigh: '⬆ Highly stable (Very slow)', impactLow: '⬇ Faster (Variance risk)' },
+            { id: 'depth', label: 'Max Depth', symbol: 'max_depth', min: 5, max: 50, step: 5, desc: 'Maximum allowed depth of any single tree.', impactHigh: '⬆ Captures deep interactions (Overfit risk)', impactLow: '⬇ Underfitting risk' },
+            { id: 'features', label: 'Max Features (%)', symbol: 'max_features', min: 10, max: 100, step: 10, desc: 'Percentage of features considered at each split.', impactHigh: '⬆ Correlated trees (Less generalized)', impactLow: '⬇ Diverse trees (Better generalization)' }
+        ],
+        presets: {
+            fast: { estimators: 100, depth: 10, features: 30 },
+            balanced: { estimators: 300, depth: 25, features: 60 },
+            accurate: { estimators: 600, depth: 40, features: 80 }
+        }
+    },
+    kmeans: {
+        name: "K-Means Hybrid",
+        icon: "fa-chart-scatter",
+        params: [
+            { id: 'clusters', label: 'Number of Segments', symbol: 'n_clusters', min: 2, max: 15, step: 1, desc: 'Target number of distinct account segments to discover.', impactHigh: '⬆ Highly granular (Hard to action manually)', impactLow: '⬇ Broad segments (Might miss niche opportunities)' },
+            { id: 'init', label: 'Initialization Sets', symbol: 'n_init', min: 5, max: 50, step: 5, desc: 'Number of times algorithm runs with different centroid seeds.', impactHigh: '⬆ Finds best global optimum (Slower)', impactLow: '⬇ Faster (Might hit local minimum)' },
+            { id: 'iters', label: 'Max Iterations', symbol: 'max_iter', min: 100, max: 1000, step: 100, desc: 'Maximum iterations for a single clustering run.', impactHigh: '⬆ Ensures strict convergence', impactLow: '⬇ Might stop early' }
+        ],
+        presets: {
+            fast: { clusters: 3, init: 5, iters: 100 },
+            balanced: { clusters: 4, init: 10, iters: 300 },
+            accurate: { clusters: 6, init: 30, iters: 800 }
+        }
+    }
+};
+
+let currentModel = 'xgboost';
+let paramState = {};
+
+function switchModel(modelId) {
+    currentModel = modelId;
+    
+    // Update UI Selection
+    document.querySelectorAll('input[name="model_type"]').forEach((radio) => {
+        const label = radio.closest('label');
+        const icon = label.querySelector('.check-icon');
+        if (radio.value === modelId) {
+            radio.checked = true;
+            label.classList.add('border-brand-primary', 'bg-brand-primary/5', 'ring-1', 'ring-brand-primary');
+            label.classList.remove('border-brand-border', 'bg-white');
+            icon.classList.remove('hidden');
+        } else {
+            radio.checked = false;
+            label.classList.remove('border-brand-primary', 'bg-brand-primary/5', 'ring-1', 'ring-brand-primary');
+            label.classList.add('border-brand-border', 'bg-white');
+            icon.classList.add('hidden');
+        }
+    });
+
+    // Apply balanced preset by default on switch
+    paramState = { ...MODEL_CONFIGS[modelId].presets.balanced };
+    renderParameters();
+    calculateImpacts();
+    updatePresetUI('balanced');
+}
+
+function renderParameters() {
+    const container = document.getElementById('dynamic-params-container');
+    const config = MODEL_CONFIGS[currentModel];
+    
+    container.innerHTML = config.params.map(p => {
+        const val = paramState[p.id];
+        const displayVal = p.isDecimal ? `0.${val < 10 ? '0' + val : val}` : val;
+        const pct = ((val - p.min) / (p.max - p.min)) * 100;
+        
+        // Status logic
+        let statusColor = "text-[#10b981]";
+        if (pct > 80 || pct < 20) statusColor = "text-[#A35139]"; // Extreme
+        else if (pct > 60 || pct < 40) statusColor = "text-[#f59e0b]"; // Warning
+
+        return `
+        <div class="border border-brand-tableBorder rounded-lg p-4 bg-white relative overflow-hidden transition-all hover:border-brand-primary/40">
+            <div class="flex justify-between items-start mb-2">
+                <div>
+                    <span class="font-bold text-brand-textPrimary text-sm flex items-center gap-2">
+                        <i class="fa-solid ${config.icon} text-brand-textSecondary"></i> ${p.label}
+                    </span>
+                    <span class="text-[10px] font-mono text-brand-textSecondary bg-brand-bg px-1.5 py-0.5 rounded mt-1 inline-block">${p.symbol}</span>
+                </div>
+                <span class="font-mono text-brand-primary font-bold text-lg" id="val-${p.id}">${displayVal}</span>
+            </div>
+            
+            <p class="text-xs text-brand-textSecondary mb-3">${p.desc}</p>
+            
+            <input type="range" min="${p.min}" max="${p.max}" value="${val}" step="${p.step}" class="hp-slider w-full mb-3" 
+                oninput="updateParameter('${p.id}', this.value, ${p.isDecimal})">
+            
+            <div class="bg-brand-bg rounded p-2 text-[10px] grid grid-cols-2 gap-2">
+                <div class="flex items-start gap-1">
+                    <span class="mt-0.5">⬆</span>
+                    <span class="text-brand-textSecondary">${p.impactHigh}</span>
+                </div>
+                <div class="flex items-start gap-1">
+                    <span class="mt-0.5">⬇</span>
+                    <span class="text-brand-textSecondary">${p.impactLow}</span>
+                </div>
+            </div>
+        </div>`;
+    }).join('');
+    
+    checkDependencies();
+}
+
+function updateParameter(id, val, isDecimal) {
+    paramState[id] = parseInt(val);
+    const displayVal = isDecimal ? `0.${val < 10 ? '0' + val : val}` : val;
+    document.getElementById(`val-${id}`).textContent = displayVal;
+    
+    // Clear preset selection since user is custom tuning
+    updatePresetUI(null);
+    calculateImpacts();
+    checkDependencies();
+}
+
+function applyPreset(preset) {
+    paramState = { ...MODEL_CONFIGS[currentModel].presets[preset] };
+    renderParameters();
+    calculateImpacts();
+    updatePresetUI(preset);
+}
+
+function updatePresetUI(activePreset) {
+    ['fast', 'balanced', 'accurate'].forEach(p => {
+        const btn = document.getElementById(`preset-${p}`);
+        if (p === activePreset) {
+            btn.className = "px-3 py-1.5 rounded-md bg-[#f59e0b] text-white text-sm font-semibold border border-[#f59e0b]";
+        } else {
+            btn.className = "px-3 py-1.5 rounded-md bg-white text-gray-700 text-sm font-medium border border-[#e5dacb] hover:bg-gray-100 transition";
+        }
+    });
+}
+
+function checkDependencies() {
+    const warningEl = document.getElementById('dependency-warning');
+    warningEl.classList.add('hidden');
+    
+    if (currentModel === 'xgboost') {
+        // If depth is high but leaf is low -> severe overfit warning
+        if (paramState.depth >= 9 && paramState.leaf <= 2) {
+            warningEl.classList.remove('hidden');
+            warningEl.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> High depth needs higher min_samples_leaf';
+        }
+    }
+}
+
+function calculateImpacts() {
+    let accStr = "", overfitStr = "", speedStr = "";
+    
+    if (currentModel === 'xgboost') {
+        // Pseudo-logic for UX demonstration
+        const complexity = (paramState.depth * paramState.estimators) / paramState.lr;
+        
+        if (complexity > 500) { accStr = 'High <i class="fa-solid fa-arrow-up"></i>'; overfitStr = '<span class="text-[#A35139]">High 🔴</span>'; speedStr = '~2m 10s'; }
+        else if (complexity > 150) { accStr = 'Optimal <i class="fa-solid fa-check text-[#10b981]"></i>'; overfitStr = '<span class="text-[#f59e0b]">Medium 🟡</span>'; speedStr = '~45s'; }
+        else { accStr = '<span class="text-[#f59e0b]">Low ⬇</span>'; overfitStr = '<span class="text-[#10b981]">Low 🟢</span>'; speedStr = '~12s'; }
+    } else if (currentModel === 'rf') {
+        const complexity = paramState.estimators * paramState.depth;
+        if (complexity > 15000) { accStr = 'High <i class="fa-solid fa-arrow-up"></i>'; overfitStr = '<span class="text-[#A35139]">High 🔴</span>'; speedStr = '~3m 30s'; }
+        else if (complexity > 4000) { accStr = 'Optimal <i class="fa-solid fa-check text-[#10b981]"></i>'; overfitStr = '<span class="text-[#f59e0b]">Medium 🟡</span>'; speedStr = '~1m 15s'; }
+        else { accStr = '<span class="text-[#f59e0b]">Fair ⬇</span>'; overfitStr = '<span class="text-[#10b981]">Low 🟢</span>'; speedStr = '~20s'; }
+    } else {
+        // KMeans
+        accStr = 'N/A (Unsupervised)';
+        if (paramState.clusters > 8) overfitStr = '<span class="text-[#f59e0b]">High Granularity</span>';
+        else overfitStr = '<span class="text-[#10b981]">Balanced</span>';
+        speedStr = `~${paramState.iters / 10}s`;
+    }
+
+    document.getElementById('impact-acc').innerHTML = accStr;
+    document.getElementById('impact-overfit').innerHTML = overfitStr;
+    document.getElementById('impact-speed').innerHTML = speedStr;
+}
+
+function resetHyperparams() {
+    applyPreset('balanced');
+    document.getElementById('fw-rev').value = 30; document.getElementById('fw-rx').value = 25;
+    document.getElementById('fw-loyalty').value = 20; document.getElementById('fw-digital').value = 15;
+    document.getElementById('fw-geo').value = 10;
+    updateFW();
+}
+
+function attachOnboardingInteractions() {
+    document.querySelectorAll('#provider-grid > div').forEach((card) => {
+        card.addEventListener('click', (event) => {
+            if (event.target.closest('button')) return;
+            const provider = card.id.replace('provider-', '');
+            const button = card.querySelector('button');
+            if (button && !button.disabled) {
+                button.click();
+            }
+        });
+    });
+
+    // Initialize first model state
+    switchModel('xgboost');
+    updateFW();
+}
+
+window.addEventListener('DOMContentLoaded', attachOnboardingInteractions);
 // ============================================================
 // TABLE DEFINITIONS PER PROVIDER
 // ============================================================
@@ -930,8 +1159,8 @@ function connectProvider(provider) {
 
         // Update status badge
         const statusEl = document.getElementById(`${provider}-status`);
-        statusEl.className = 'inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-brand-lowSev/10 border border-brand-lowSev/30 text-brand-lowSev';
-        statusEl.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-brand-lowSev"></span> Connected';
+        statusEl.className = 'inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-[#10b981]/10 border border-[#10b981]/30 text-[#10b981]';
+        statusEl.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-[#10b981]"></span> Connected';
 
         // Swap creds for success state
         const creds = document.getElementById(`${provider}-creds`);
@@ -1180,6 +1409,67 @@ function startTraining() {
         logIndex++;
     }, 420);
 }
+
+function refreshModelTypeSelection() {
+    document.querySelectorAll('input[name="model_type"]').forEach((radio) => {
+        const label = radio.closest('label');
+        if (!label) return;
+
+        if (radio.checked) {
+            // Active state
+            label.classList.add(
+                'border-brand-primary',
+                'bg-brand-primary/5',
+                'text-gray-800'   // ✅ FIX: readable dark text
+            );
+
+            label.classList.remove(
+                'border-brand-border',
+                'bg-white',
+                'text-gray-600',
+                'text-white'
+            );
+
+        } else {
+            // Default state
+            label.classList.remove(
+                'border-brand-primary',
+                'bg-brand-primary/5',
+                'text-white'
+            );
+
+            label.classList.add(
+                'border-brand-border',
+                'bg-white',
+                'text-gray-600'   // ✅ FIX: softer readable text
+            );
+        }
+    });
+}
+
+function attachOnboardingInteractions() {
+    document.querySelectorAll('#provider-grid > div').forEach((card) => {
+        card.addEventListener('click', (event) => {
+            if (event.target.closest('button')) return;
+            const provider = card.id.replace('provider-', '');
+            const button = card.querySelector('button');
+            if (button && !button.disabled) {
+                button.click();
+            }
+        });
+    });
+
+    document.querySelectorAll('input[name="model_type"]').forEach((radio) => {
+        radio.addEventListener('change', () => {
+            refreshModelTypeSelection();
+        });
+    });
+
+    refreshModelTypeSelection();
+    updateFW();
+}
+
+window.addEventListener('DOMContentLoaded', attachOnboardingInteractions);
 </script>
 </body>
 </html>

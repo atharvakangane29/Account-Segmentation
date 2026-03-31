@@ -17,6 +17,36 @@ function commonLayout() {
     };
 }
 
+function jitterValue(value, maxPct = 0.06) {
+    const delta = (Math.random() * 2 - 1) * Math.abs(value) * maxPct;
+    return Number((value + delta).toFixed(2));
+}
+
+function jitterArray(numbers, maxPct = 0.08) {
+    return numbers.map((num) => typeof num === 'number' ? Number(jitterValue(num, maxPct).toFixed(2)) : num);
+}
+
+function jitterSegments(segments) {
+    return segments.map((seg) => ({
+        ...seg,
+        count: Math.max(8, Math.round(jitterValue(seg.count, 0.08))),
+        xRange: seg.xRange.map((v) => jitterValue(v, 0.06)),
+        yRange: seg.yRange.map((v) => jitterValue(v, 0.06)),
+        sizeRange: seg.sizeRange.map((v) => jitterValue(v, 0.06))
+    }));
+}
+
+function jitterSankey(sankeyData) {
+    return {
+        ...sankeyData,
+        links: {
+            ...sankeyData.links,
+            value: sankeyData.links.value.map((v) => Math.max(1, Math.round(jitterValue(v, 0.12))))
+        }
+    };
+}
+
+
 /* ---------- Executive Overview Charts ---------- */
 
 function renderWaterfallChart(containerId, wfData) {
@@ -164,10 +194,11 @@ function renderRadarChart(containerId, radarData) {
 
 /* ---------- Account Explorer Charts ---------- */
 
-function renderMiniTrendChart(containerId) {
+function renderMiniTrendChart(containerId, trendData = null) {
+    const defaultY = [45, 52, 48, 60, 65, 75, 82];
     const data = [{
         x: ['1', '5', '10', '15', '20', '25', '30'],
-        y: [45, 52, 48, 60, 65, 75, 82],
+        y: trendData || jitterArray(defaultY, 0.08),
         type: 'scatter',
         mode: 'lines+markers',
         line: { color: '#7FA3C0', width: 2, shape: 'spline' },
