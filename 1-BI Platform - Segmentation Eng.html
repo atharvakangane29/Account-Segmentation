@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BI Platform - Segmentation Engine</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script> window.FontAwesomeConfig = { autoReplaceSvg: 'nest'};</script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <script src="https://cdn.plot.ly/plotly-3.1.1.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            bg: '#EEE9DF',
+                            border: '#C9C1B1',
+                            textPrimary: '#2C3B4D',
+                            dark: '#1B2632',
+                            primary: '#FFB162',
+                            critical: '#A35139',
+                            textSecondary: '#4A6B8A',
+                            lowSev: '#7FA3C0',
+                            tableBorder: '#D8D0C4',
+                            cardBg: '#F7F4EF'
+                        },
+                        semantic: {
+                            emerald: '#10b981', // Growth (kept for charts if needed, but UI uses brand colors)
+                            amber: '#FFB162',   // Opportunity (mapped to primary)
+                            rose: '#A35139',    // At-Risk (mapped to critical)
+                            violet: '#4A6B8A',  // Strategic (mapped to secondary)
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+</head>
+<body class="w-full min-h-screen m-0 flex flex-col overflow-x-hidden text-brand-textPrimary bg-brand-bg">
+
+    <!-- Global Navigation Header -->
+    <header id="global-header" class="bg-brand-dark border-b border-brand-border sticky top-0 z-50 h-16 flex items-center justify-between px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center gap-8">
+            <!-- Logo -->
+            <div class="flex items-center gap-2">
+                <img src="assets/img/logo.png" alt="PharmaBI Logo" class="w-8 h-8">
+                <span class="text-white text-xl font-bold tracking-tight">Account Segmentation</span>
+            </div>
+
+            <!-- Desktop Nav -->
+            <nav class="hidden md:flex items-center gap-1">
+                <a href="0-BI Platform - Executive Overvi.html" class="px-3 py-2 text-sm font-medium text-brand-textSecondary hover:text-white hover:bg-brand-dark/80 rounded-md transition-colors">Executive Overview</a>
+                <a href="1-BI Platform - Segmentation Eng.html" class="px-3 py-2 text-sm font-medium text-brand-primary bg-brand-primary/10 rounded-md">Segmentation Engine</a>
+                <a href="2-BI Platform - Account Explorer.html" class="px-3 py-2 text-sm font-medium text-brand-textSecondary hover:text-white hover:bg-brand-dark/80 rounded-md transition-colors">Account Explorer</a>
+                <a href="3-BI Platform - Account Deep-Div.html" class="px-3 py-2 text-sm font-medium text-brand-textSecondary hover:text-white hover:bg-brand-dark/80 rounded-md transition-colors">Account Deep-Dive</a>
+                <a href="4-BI Platform - Campaign Hub.html" class="px-3 py-2 text-sm font-medium text-brand-textSecondary hover:text-white hover:bg-brand-dark/80 rounded-md transition-colors">Campaign Hub</a>
+                <a href="5-BI Platform - Settings.html" class="px-3 py-2 text-sm font-medium text-brand-textSecondary hover:text-white hover:bg-brand-dark/80 rounded-md transition-colors">Settings</a>
+            </nav>
+        </div>
+
+        <div class="flex items-center gap-4">
+            <!-- Search -->
+            <div class="hidden lg:flex relative">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <i class="fa-solid fa-magnifying-glass text-brand-textSecondary text-sm"></i>
+                </div>
+                <input type="text" class="block w-64 pl-10 pr-3 py-1.5 border border-brand-border/30 rounded-full text-sm bg-brand-dark/50 text-white placeholder-brand-textSecondary focus:bg-brand-dark focus:ring-1 focus:ring-brand-primary focus:border-brand-primary transition-colors" placeholder="Search accounts, campaigns...">
+            </div>
+
+            <!-- Notifications -->
+            <button class="relative p-2 text-brand-textSecondary hover:text-white transition-colors rounded-full hover:bg-brand-dark/80">
+                <i class="fa-regular fa-bell"></i>
+                <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-brand-critical rounded-full border border-brand-dark"></span>
+            </button>
+
+            <!-- Profile Removed as requested -->
+            <div class="flex items-center gap-2 cursor-pointer pl-2 border-l border-brand-border/30">
+                <div class="hidden sm:block text-sm text-right">
+                    <p class="font-medium text-white leading-none">Dr. A. Carter</p>
+                    <p class="text-xs text-brand-textSecondary mt-1">SVP Sales</p>
+                </div>
+                <i class="fa-solid fa-chevron-down text-brand-textSecondary text-xs ml-1"></i>
+            </div>
+            
+            <!-- Mobile Menu Toggle -->
+            <button class="md:hidden p-2 text-brand-textSecondary hover:text-white">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main id="main-content" class="flex-1 w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col">
+        
+        <!-- Workspace Header -->
+        <div id="workspace-header" class="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
+            <div>
+                <h1 class="text-2xl font-bold text-brand-textPrimary">Segmentation Engine</h1>
+                <p class="text-sm text-brand-textSecondary mt-1">Interactive classification workspace and model tuning.</p>
+            </div>
+            
+            <div class="flex flex-wrap items-center gap-3">
+                <div class="flex items-center bg-brand-cardBg border border-brand-border rounded-lg shadow-sm p-1">
+                    <button class="px-3 py-1.5 text-xs font-medium bg-brand-primary/20 text-brand-dark rounded-md">Current Model</button>
+                    <button class="px-3 py-1.5 text-xs font-medium text-brand-textSecondary hover:text-brand-textPrimary rounded-md">Draft 1</button>
+                </div>
+                
+                <button class="flex items-center gap-2 px-3 py-2 bg-brand-cardBg border border-brand-border rounded-lg shadow-sm text-sm font-medium text-brand-textPrimary hover:bg-brand-bg transition-colors">
+                    <i class="fa-solid fa-share-nodes text-brand-textSecondary"></i>
+                    Share
+                </button>
+                
+                <button class="flex items-center gap-2 px-3 py-2 bg-brand-primary border border-transparent rounded-lg shadow-sm text-sm font-medium text-brand-dark hover:bg-brand-primary/90 transition-colors">
+                    <i class="fa-solid fa-floppy-disk"></i>
+                    Save Segment
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Workspace Grid -->
+        <div class="dashboard-grid flex-1">
+            
+            <!-- Left Column: Controls (3 cols) -->
+            <div id="controls-panel" class="col-span-12 lg:col-span-3 bg-brand-cardBg rounded-xl border border-brand-border shadow-sm flex flex-col min-h-0 max-h-[calc(100vh-8rem)] lg:sticky lg:top-20">
+                <div class="p-4 border-b border-brand-border flex items-center justify-between bg-brand-bg/50 rounded-t-xl">
+                    <h2 class="text-sm font-semibold text-brand-textPrimary flex items-center gap-2">
+                        <i class="fa-solid fa-sliders text-brand-primary"></i> Model Weights
+                    </h2>
+                    <button class="text-xs text-brand-textSecondary hover:text-brand-primary font-medium">Reset</button>
+                </div>
+                
+                <div class="p-5 flex-1 overflow-y-auto space-y-5">
+                    <div id="weight-revenue">
+                        <div class="flex justify-between text-sm mb-1">
+                            <span class="font-medium text-brand-textPrimary">Revenue Weight</span>
+                            <span class="text-brand-textSecondary font-mono" id="rev-val">30%</span>
+                        </div>
+                        <input type="range" min="0" max="100" value="30" id="rev-slider" class="w-full" oninput="updateWeights()">
+                    </div>
+                    <div id="weight-growth">
+                        <div class="flex justify-between text-sm mb-1">
+                            <span class="font-medium text-brand-textPrimary">Growth Weight</span>
+                            <span class="text-brand-textSecondary font-mono" id="growth-val">25%</span>
+                        </div>
+                        <input type="range" min="0" max="100" value="25" id="growth-slider" class="w-full" oninput="updateWeights()">
+                    </div>
+                    <div id="weight-loyalty">
+                        <div class="flex justify-between text-sm mb-1">
+                            <span class="font-medium text-brand-textPrimary">Loyalty Weight</span>
+                            <span class="text-brand-textSecondary font-mono" id="loyalty-val">20%</span>
+                        </div>
+                        <input type="range" min="0" max="100" value="20" id="loyalty-slider" class="w-full" oninput="updateWeights()">
+                    </div>
+                    <div id="weight-affinity">
+                        <div class="flex justify-between text-sm mb-1">
+                            <span class="font-medium text-brand-textPrimary">Digital Affinity</span>
+                            <span class="text-brand-textSecondary font-mono" id="affinity-val">25%</span>
+                        </div>
+                        <input type="range" min="0" max="100" value="25" id="affinity-slider" class="w-full" oninput="updateWeights()">
+                    </div>
+                    <div class="pt-3 border-t border-brand-border">
+                        <div class="flex justify-between text-xs text-brand-textSecondary mb-1">
+                            <span>Total Weight</span>
+                            <span id="total-weight" class="font-mono text-brand-textPrimary">100%</span>
+                        </div>
+                        <div class="w-full bg-brand-bg rounded-full h-1.5 flex overflow-hidden">
+                            <div id="bar-rev" class="weight-bar bg-brand-primary" style="width:30%"></div>
+                            <div id="bar-growth" class="weight-bar bg-brand-lowSev" style="width:25%"></div>
+                            <div id="bar-loyalty" class="weight-bar bg-brand-textSecondary" style="width:20%"></div>
+                            <div id="bar-affinity" class="weight-bar bg-brand-critical" style="width:25%"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="p-4 border-t border-brand-border bg-brand-bg/50 rounded-b-xl">
+                    <button class="w-full py-2 bg-brand-primary text-brand-dark rounded-lg text-sm font-medium hover:bg-brand-primary/90 transition-colors shadow-sm">
+                        Apply Weights
+                    </button>
+                </div>
+            </div>
+
+            <!-- Middle Column: 2x2 Grid (9 cols) -->
+            <div id="segmentation-grid" class="col-span-12 lg:col-span-9 flex flex-col gap-6">
+                
+                <!-- 2x2 Bubble Chart -->
+                <div class="bg-brand-cardBg rounded-xl border border-brand-border shadow-sm flex flex-col h-[500px]">
+                    <div class="p-4 border-b border-brand-border flex items-center justify-between">
+                        <div>
+                            <h2 class="text-base font-semibold text-brand-textPrimary">Value vs. Risk Analysis</h2>
+                            <p class="text-xs text-brand-textSecondary">Bubble size represents ARR. Colors indicate AI semantic scoring.</p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <select class="text-sm bg-white border-brand-border rounded-md text-brand-textPrimary py-1 pl-2 pr-8 focus:ring-brand-primary focus:border-brand-primary">
+                                <option>All Account Types</option>
+                                <option>Hospitals</option>
+                                <option>Pharmacy Chains</option>
+                                <option>Distributors</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="flex-1 p-4 relative w-full h-full">
+                        <div id="bubble-chart" class="w-full h-full"></div>
+                    </div>
+                </div>
+
+                <!-- Sankey Flow Section -->
+                <div id="sankey-flow-section" class="bg-brand-cardBg rounded-xl border border-brand-border shadow-sm flex flex-col h-[400px]">
+                    <div class="p-4 border-b border-brand-border flex items-center justify-between">
+                        <div>
+                            <h2 class="text-base font-semibold text-brand-textPrimary">Segment Action Flow</h2>
+                            <p class="text-xs text-brand-textSecondary">Mapping current segments to recommended campaign plays.</p>
+                        </div>
+                        <button class="text-brand-textSecondary hover:text-brand-textPrimary"><i class="fa-solid fa-expand"></i></button>
+                    </div>
+                    <div class="flex-1 p-4 relative w-full h-full">
+                        <div id="sankey-chart" class="w-full h-full"></div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Global Footer -->
+    <footer id="global-footer" class="bg-brand-cardBg border-t border-brand-border mt-auto py-6 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-[1440px] mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-2 text-brand-textSecondary text-sm">
+                <i class="fa-solid fa-chart-pie text-brand-primary"></i>
+                <span>© 2026 PharmaBI Systems. All rights reserved.</span>
+            </div>
+            <div class="flex items-center gap-6 text-sm">
+                <a href="#" class="text-brand-textSecondary hover:text-brand-textPrimary transition-colors">Privacy Policy</a>
+                <a href="#" class="text-brand-textSecondary hover:text-brand-textPrimary transition-colors">Terms of Service</a>
+                <a href="#" class="text-brand-textSecondary hover:text-brand-textPrimary transition-colors">Support</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- External JS -->
+    <script src="data/mock-data.js"></script>
+    <script src="src/data-loader.js"></script>
+    <script src="src/charts.js"></script>
+    <script src="src/segmentation-engine.js"></script>
+</body>
+</html>

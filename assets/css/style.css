@@ -1,0 +1,136 @@
+/* ===================================================
+   Account Segmentation BI Platform – Shared Styles
+   =================================================== */
+
+/* ---------- Base ---------- */
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #EEE9DF;
+    color: #2C3B4D;
+}
+
+/* ---------- Scrollbar ---------- */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #C9C1B1; border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: #4A6B8A; }
+
+/* ---------- Dashboard Grid ---------- */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: 1.5rem;
+}
+
+/* ---------- Range Slider ---------- */
+input[type=range] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    background: transparent;
+}
+input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    height: 16px;
+    width: 16px;
+    border-radius: 50%;
+    background: #FFB162;
+    cursor: pointer;
+    margin-top: -6px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+input[type=range]::-webkit-slider-runnable-track {
+    width: 100%;
+    height: 4px;
+    cursor: pointer;
+    background: #C9C1B1;
+    border-radius: 2px;
+}
+input[type=range]:focus {
+    outline: none;
+}
+
+/* ---------- Weight Bar (Segmentation Engine) ---------- */
+.weight-bar {
+    height: 4px;
+    border-radius: 2px;
+    transition: width 0.3s ease;
+}
+
+/* ---------- LIME Explainability Bars (Deep Dive) ---------- */
+.lime-bar-pos {
+    background: linear-gradient(90deg, rgba(16, 185, 129, 0.2), rgba(16, 185, 129, 0.6));
+    border-radius: 0 3px 3px 0;
+}
+.lime-bar-neg {
+    background: linear-gradient(270deg, rgba(163, 81, 57, 0.2), rgba(163, 81, 57, 0.6));
+    border-radius: 3px 0 0 3px;
+}
+
+/* ---------- Toggle Switch (Settings) ---------- */
+.toggle-track {
+    width: 36px;
+    height: 20px;
+    border-radius: 10px;
+    background: #C9C1B1;
+    position: relative;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+.toggle-track.active {
+    background: #FFB162;
+}
+.toggle-thumb {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: white;
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    transition: transform 0.3s;
+}
+.toggle-track.active .toggle-thumb {
+    transform: translateX(16px);
+}
+
+/* ---------- Campaign Hub Stepper ---------- */
+.step-active {
+    color: #FFB162;
+    border-color: #FFB162;
+}
+.step-completed {
+    color: #7FA3C0;
+    border-color: #7FA3C0;
+}
+.step-inactive {
+    color: #C9C1B1;
+    border-color: #C9C1B1;
+}
+
+/* ---------- Account Explorer Table ---------- */
+.table-container {
+    scrollbar-width: thin;
+    scrollbar-color: #C9C1B1 transparent;
+}
+
+.sticky-header th {
+    position: sticky;
+    top: 0;
+    background-color: #F7F4EF;
+    z-index: 10;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.expandable-row-content {
+    transition: all 0.3s ease-in-out;
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+}
+.expanded .expandable-row-content {
+    max-height: 500px;
+    opacity: 1;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+}

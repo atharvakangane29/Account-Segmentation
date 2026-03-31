@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BI Platform - Account Deep-Dive</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script> window.FontAwesomeConfig = { autoReplaceSvg: 'nest'};</script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <script src="https://cdn.plot.ly/plotly-3.1.1.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            bg: '#EEE9DF',
+                            border: '#C9C1B1',
+                            textPrimary: '#2C3B4D',
+                            dark: '#1B2632',
+                            primary: '#FFB162',
+                            critical: '#A35139',
+                            textSecondary: '#4A6B8A',
+                            lowSev: '#7FA3C0',
+                            tableBorder: '#D8D0C4',
+                            cardBg: '#F7F4EF'
+                        },
+                        indigo: {
+                            50: '#eef2ff',
+                            100: '#e0e7ff',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                            800: '#3730a3',
+                            900: '#312e81',
+                        },
+                        slate: {
+                            50: '#f8fafc',
+                            100: '#f1f5f9',
+                            200: '#e2e8f0',
+                            300: '#cbd5e1',
+                            400: '#94a3b8',
+                            500: '#64748b',
+                            600: '#475569',
+                            700: '#334155',
+                            800: '#1e293b',
+                            900: '#0f172a',
+                        },
+                        semantic: {
+                            emerald: '#10b981', // Growth
+                            amber: '#f59e0b',   // Opportunity
+                            rose: '#f43f5e',    // At-Risk
+                            violet: '#8b5cf6',  // Strategic
+                        }
+                    },
+                    boxShadow: {
+                        'soft': '0 4px 20px -2px rgba(0, 0, 0, 0.05)',
+                        'card': '0 2px 10px -2px rgba(0, 0, 0, 0.04)',
+                    }
+                }
+            }
+        }
+    </script>
+
+</head>
+<body class="w-full min-h-screen m-0 flex flex-col overflow-x-hidden text-brand-textPrimary bg-brand-bg">
+
+    <!-- Global Navigation Header -->
+    <header id="global-header" class="bg-brand-dark border-b border-brand-border sticky top-0 z-50 h-16 flex items-center justify-between px-4 sm:px-6 lg:px-8 shadow-sm">
+        <div class="flex items-center gap-8">
+            <!-- Logo -->
+            <div class="flex items-center gap-2">
+                <div class="w-8 h-8 bg-brand-primary rounded-md flex items-center justify-center shadow-sm">
+                    <i class="fa-solid fa-chart-pie text-brand-dark text-sm"></i>
+                </div>
+                <span class="text-white text-xl font-bold tracking-tight">Account Segmentation</span>
+            </div>
+
+            <!-- Desktop Nav -->
+            <nav class="hidden md:flex items-center gap-1">
+                <a href="0-BI Platform - Executive Overvi.html" class="px-3 py-2 text-sm font-medium text-brand-textSecondary hover:text-white hover:bg-brand-bg/10 rounded-md transition-colors">Executive Overview</a>
+                <a href="1-BI Platform - Segmentation Eng.html" class="px-3 py-2 text-sm font-medium text-brand-textSecondary hover:text-white hover:bg-brand-bg/10 rounded-md transition-colors">Segmentation Engine</a>
+                <a href="2-BI Platform - Account Explorer.html" class="px-3 py-2 text-sm font-medium text-brand-textSecondary hover:text-white hover:bg-brand-bg/10 rounded-md transition-colors">Account Explorer</a>
+                <a href="3-BI Platform - Account Deep-Div.html" class="px-3 py-2 text-sm font-medium text-brand-primary bg-brand-primary/10 rounded-md">Account Deep-Dive</a>
+                <a href="4-BI Platform - Campaign Hub.html" class="px-3 py-2 text-sm font-medium text-brand-textSecondary hover:text-white hover:bg-brand-bg/10 rounded-md transition-colors">Campaign Hub</a>
+                <a href="5-BI Platform - Settings.html" class="px-3 py-2 text-sm font-medium text-brand-textSecondary hover:text-white hover:bg-brand-bg/10 rounded-md transition-colors">Settings</a>
+            </nav>
+        </div>
+
+        <div class="flex items-center gap-4">
+            <!-- Search -->
+            <div class="hidden lg:flex relative">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <i class="fa-solid fa-magnifying-glass text-brand-textSecondary text-sm"></i>
+                </div>
+                <input type="text" class="block w-64 pl-10 pr-3 py-1.5 border border-brand-border rounded-full text-sm bg-brand-cardBg focus:bg-white focus:ring-1 focus:ring-brand-primary focus:border-brand-primary transition-colors shadow-inner text-brand-textPrimary placeholder-brand-textSecondary" placeholder="Search accounts, campaigns...">
+            </div>
+
+            <!-- Notifications -->
+            <button class="relative p-2 text-brand-textSecondary hover:text-white transition-colors rounded-full hover:bg-brand-bg/10">
+                <i class="fa-regular fa-bell"></i>
+                <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-brand-critical rounded-full border border-brand-dark"></span>
+            </button>
+
+            <!-- Mobile Menu Toggle -->
+            <button class="md:hidden p-2 text-brand-textSecondary hover:bg-brand-bg/10 rounded-md">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main id="main-content" class="flex-1 w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col gap-6">
+        
+        <!-- Breadcrumb & Actions -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div class="flex items-center gap-2 text-sm text-brand-textSecondary">
+                <a href="2-BI Platform - Account Explorer.html" class="hover:text-brand-primary transition-colors">Account Explorer</a>
+                <i class="fa-solid fa-chevron-right text-xs"></i>
+                <span class="text-brand-textPrimary font-medium">Mercy Care Network</span>
+            </div>
+            <div class="flex items-center gap-3">
+                <button class="px-4 py-2 bg-brand-cardBg border border-brand-border rounded-lg shadow-sm text-sm font-medium text-brand-textPrimary hover:bg-brand-bg transition-colors">
+                    <i class="fa-regular fa-file-pdf mr-2"></i> Export Report
+                </button>
+                <button class="px-4 py-2 bg-brand-primary border border-transparent rounded-lg shadow-sm text-sm font-medium text-brand-dark hover:bg-brand-primary/90 transition-colors">
+                    <i class="fa-solid fa-pen-to-square mr-2"></i> Edit Account
+                </button>
+            </div>
+        </div>
+
+        <!-- Section 1: Account Header Summary -->
+        <div id="account-header" class="bg-brand-cardBg rounded-xl border border-brand-border shadow-soft p-6">
+            <div class="flex flex-col lg:flex-row justify-between gap-6">
+                <!-- Left: Identity -->
+                <div class="flex items-start gap-4">
+                    <div class="w-16 h-16 rounded-xl bg-brand-primary/20 text-brand-primary flex items-center justify-center font-bold text-2xl shadow-sm shrink-0 border border-brand-primary/30">
+                        MC
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-3 mb-1">
+                            <h1 class="text-2xl font-bold text-brand-textPrimary">Mercy Care Network</h1>
+                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Growth
+                            </span>
+                        </div>
+                        <p class="text-brand-textSecondary text-sm mb-3">ID: ACC-8921 • Hospital Chain • North America</p>
+                        <div class="flex flex-wrap items-center gap-4 text-sm text-brand-textSecondary">
+                            <div class="flex items-center gap-1.5">
+                                <i class="fa-solid fa-user-tie text-brand-lowSev"></i>
+                                Owner: <span class="font-medium text-brand-textPrimary">Sarah Jenkins</span>
+                            </div>
+                            <div class="flex items-center gap-1.5">
+                                <i class="fa-regular fa-calendar text-brand-lowSev"></i>
+                                Renewal: <span class="font-medium text-brand-textPrimary">Nov 15, 2026</span>
+                            </div>
+                            <div class="flex items-center gap-1.5">
+                                <i class="fa-solid fa-link text-brand-lowSev"></i>
+                                <a href="#" class="text-brand-primary hover:underline">mercycare.org</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Quick Stats -->
+                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 lg:w-2/3">
+                    <div class="bg-brand-bg p-3 rounded-lg border border-brand-tableBorder">
+                        <p class="text-xs text-brand-textSecondary font-medium mb-1">Total ARR</p>
+                        <p class="text-lg font-bold text-brand-textPrimary">$1.2M</p>
+                        <p class="text-xs text-emerald-600 mt-1"><i class="fa-solid fa-arrow-up"></i> 12% YoY</p>
+                    </div>
+                    <div class="bg-brand-bg p-3 rounded-lg border border-brand-tableBorder">
+                        <p class="text-xs text-brand-textSecondary font-medium mb-1">Health Score</p>
+                        <p class="text-lg font-bold text-brand-textPrimary">85<span class="text-sm text-brand-textSecondary font-normal">/100</span></p>
+                        <p class="text-xs text-brand-textSecondary mt-1">Excellent</p>
+                    </div>
+                    <div class="bg-brand-bg p-3 rounded-lg border border-brand-tableBorder">
+                        <p class="text-xs text-brand-textSecondary font-medium mb-1">LTV Estimate</p>
+                        <p class="text-lg font-bold text-brand-primary">$5.4M</p>
+                        <p class="text-xs text-brand-textSecondary mt-1">5-year</p>
+                    </div>
+                    <div class="bg-brand-bg p-3 rounded-lg border border-brand-tableBorder">
+                        <p class="text-xs text-brand-textSecondary font-medium mb-1">Gross Margin</p>
+                        <p class="text-lg font-bold text-brand-textPrimary">42.5%</p>
+                        <p class="text-xs text-brand-textSecondary mt-1">Industry avg: 38%</p>
+                    </div>
+                    <div class="bg-brand-bg p-3 rounded-lg border border-brand-tableBorder">
+                        <p class="text-xs text-brand-textSecondary font-medium mb-1">Churn Probability</p>
+                        <p class="text-lg font-bold text-emerald-600">0.08</p>
+                        <p class="text-xs text-emerald-600 mt-1">Low risk</p>
+                    </div>
+                    <div class="bg-brand-bg p-3 rounded-lg border border-brand-tableBorder">
+                        <p class="text-xs text-brand-textSecondary font-medium mb-1">Growth Probability</p>
+                        <p class="text-lg font-bold text-brand-lowSev">0.72</p>
+                        <p class="text-xs text-emerald-600 mt-1">High potential</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            <!-- Left Column: Radar & AI Insight -->
+            <div class="lg:col-span-1 flex flex-col gap-6">
+                
+                <!-- Section 2: LIME Feature Importance -->
+                <div id="lime-explainability" class="bg-brand-cardBg rounded-xl border border-brand-border shadow-soft p-5 flex flex-col">
+                    <div class="flex items-center justify-between mb-2">
+                        <h2 class="text-base font-bold text-brand-textPrimary flex items-center gap-2">
+                            <i class="fa-solid fa-microscope text-brand-primary text-sm"></i> LIME Feature Importance
+                        </h2>
+                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-brand-primary/10 text-brand-textPrimary border border-brand-primary/20">Explainable AI</span>
+                    </div>
+                    <p class="text-xs text-brand-textSecondary mb-4">Why is this a "Growth" segment account?</p>
+                    <div class="space-y-3">
+                        <!-- Patient Volume -->
+                        <div class="flex items-center gap-3">
+                            <span class="text-xs text-brand-textPrimary w-28 text-right truncate">Patient Volume</span>
+                            <div class="flex-1 flex items-center">
+                                <div class="w-1/2"></div>
+                                <div class="w-1/2 flex">
+                                    <div class="lime-bar-pos h-5" style="width:68%"></div>
+                                </div>
+                            </div>
+                            <span class="text-xs font-mono text-emerald-600 w-12">+0.34</span>
+                        </div>
+                        <!-- Contract Length -->
+                        <div class="flex items-center gap-3">
+                            <span class="text-xs text-brand-textPrimary w-28 text-right truncate">Contract Length</span>
+                            <div class="flex-1 flex items-center">
+                                <div class="w-1/2"></div>
+                                <div class="w-1/2 flex">
+                                    <div class="lime-bar-pos h-5" style="width:24%"></div>
+                                </div>
+                            </div>
+                            <span class="text-xs font-mono text-emerald-600 w-12">+0.12</span>
+                        </div>
+                        <!-- Competitor Share -->
+                        <div class="flex items-center gap-3">
+                            <span class="text-xs text-brand-textPrimary w-28 text-right truncate">Competitor Share</span>
+                            <div class="flex-1 flex items-center">
+                                <div class="w-1/2 flex justify-end">
+                                    <div class="lime-bar-neg h-5" style="width:30%"></div>
+                                </div>
+                                <div class="w-1/2"></div>
+                            </div>
+                            <span class="text-xs font-mono text-brand-critical w-12">-0.15</span>
+                        </div>
+                        <!-- Digital Affinity -->
+                        <div class="flex items-center gap-3">
+                            <span class="text-xs text-brand-textPrimary w-28 text-right truncate">Digital Affinity</span>
+                            <div class="flex-1 flex items-center">
+                                <div class="w-1/2 flex justify-end">
+                                    <div class="lime-bar-neg h-5" style="width:36%"></div>
+                                </div>
+                                <div class="w-1/2"></div>
+                            </div>
+                            <span class="text-xs font-mono text-brand-critical w-12">-0.18</span>
+                        </div>
+                        <div class="pt-2 border-t border-brand-tableBorder flex items-center gap-2 text-xs text-brand-textSecondary">
+                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs bg-brand-bg border border-brand-border">IV: 0.32</span>
+                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs bg-brand-bg border border-brand-border">VIF: Pass</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 3: Multi-Factor Health Radar -->
+                <div id="health-radar" class="bg-brand-cardBg rounded-xl border border-brand-border shadow-soft p-5 h-[340px] flex flex-col">
+                    <div class="flex items-center justify-between mb-2">
+                        <h2 class="text-base font-bold text-brand-textPrimary">Multi-Factor Health Radar</h2>
+                        <button class="text-brand-textSecondary hover:text-brand-primary"><i class="fa-solid fa-circle-info"></i></button>
+                    </div>
+                    <div id="radar-chart" class="flex-1 w-full"></div>
+                </div>
+
+                <!-- Section 4: AI Narrative Insight -->
+                <div id="ai-insight" class="bg-brand-cardBg rounded-xl border border-brand-primary/30 shadow-soft p-5 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-brand-primary/10 rounded-bl-full opacity-50 -z-10"></div>
+                    
+                    <div class="flex items-center gap-2 mb-4">
+                        <div class="w-8 h-8 rounded-lg bg-brand-primary text-brand-dark flex items-center justify-center shadow-sm">
+                            <i class="fa-solid fa-wand-magic-sparkles text-sm"></i>
+                        </div>
+                        <h2 class="text-base font-bold text-brand-textPrimary">AI Narrative Insight</h2>
+                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-brand-primary/10 text-brand-textPrimary border border-brand-primary/20 ml-auto">LIME + SHAP</span>
+                    </div>
+                    
+                    <div class="prose prose-sm text-brand-textPrimary mb-4 leading-relaxed">
+                        <p>Classified as <span class="font-semibold text-emerald-600">Growth</span> due to strong volume ($1.2M ARR) and high loyalty metrics (NPS 68). Primary risk vector is <span class="text-brand-critical font-medium">moderate Digital Affinity score</span>. LIME analysis identifies <span class="text-emerald-600 font-medium">Patient Volume (impact: +0.34)</span> as the dominant classification driver.</p>
+                    </div>
+
+                    <div class="bg-brand-bg rounded-lg border border-brand-tableBorder p-3 mb-4">
+                        <p class="text-xs font-semibold text-brand-textSecondary uppercase tracking-wider mb-2">Suggested Next Best Action</p>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-brand-textPrimary font-medium">Initiate cross-sell campaign for Cardiovascular line</span>
+                            <button class="px-3 py-1.5 bg-brand-primary/20 text-brand-dark hover:bg-brand-primary/30 rounded text-xs font-medium transition-colors">
+                                Execute
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="text-xs text-brand-textSecondary flex items-center gap-1">
+                        <i class="fa-solid fa-clock-rotate-left"></i> Generated 2 hours ago based on Q3 telemetry
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Margin Simulator & Recent Activity -->
+            <div class="lg:col-span-2 flex flex-col gap-6">
+                
+                <!-- Section 4: Margin Simulator Tool -->
+                <div id="margin-simulator" class="bg-brand-cardBg rounded-xl border border-brand-border shadow-soft p-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <div>
+                            <h2 class="text-lg font-bold text-brand-textPrimary">Margin Simulator</h2>
+                            <p class="text-sm text-brand-textSecondary">Model contract renewal scenarios</p>
+                        </div>
+                        <button class="px-3 py-1.5 border border-brand-border rounded-md text-sm text-brand-textSecondary hover:bg-brand-bg flex items-center gap-2">
+                            <i class="fa-regular fa-bookmark"></i> Save Scenario
+                        </button>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <!-- Inputs -->
+                        <div class="space-y-6">
+                            <div>
+                                <div class="flex justify-between mb-1">
+                                    <label class="text-sm font-medium text-brand-textPrimary">Volume Commitment (Units)</label>
+                                    <span class="text-sm font-bold text-brand-primary" id="vol-val">10,000</span>
+                                </div>
+                                <input type="range" min="1000" max="50000" value="10000" class="w-full h-2 bg-brand-border rounded-lg appearance-none cursor-pointer" id="vol-slider" oninput="document.getElementById('vol-val').innerText = this.value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')">
+                            </div>
+                            
+                            <div>
+                                <div class="flex justify-between mb-1">
+                                    <label class="text-sm font-medium text-brand-textPrimary">Discount Applied (%)</label>
+                                    <span class="text-sm font-bold text-brand-primary" id="disc-val">12%</span>
+                                </div>
+                                <input type="range" min="0" max="40" value="12" class="w-full h-2 bg-brand-border rounded-lg appearance-none cursor-pointer" id="disc-slider" oninput="document.getElementById('disc-val').innerText = this.value + '%'">
+                            </div>
+
+                            <div>
+                                <div class="flex justify-between mb-1">
+                                    <label class="text-sm font-medium text-brand-textPrimary">COGS Adjustment (%)</label>
+                                    <span class="text-sm font-bold text-brand-primary" id="cogs-val">+2%</span>
+                                </div>
+                                <input type="range" min="-10" max="20" value="2" class="w-full h-2 bg-brand-border rounded-lg appearance-none cursor-pointer" id="cogs-slider" oninput="document.getElementById('cogs-val').innerText = (this.value > 0 ? '+' : '') + this.value + '%'">
+                            </div>
+                        </div>
+
+                        <!-- Outputs -->
+                        <div class="bg-brand-bg rounded-xl p-5 border border-brand-tableBorder flex flex-col justify-center">
+                            <h3 class="text-sm font-medium text-brand-textSecondary mb-4 text-center">Projected Impact</h3>
+                            
+                            <div class="grid grid-cols-2 gap-4 mb-6">
+                                <div class="text-center">
+                                    <p class="text-xs text-brand-textSecondary mb-1">Projected Revenue</p>
+                                    <p class="text-2xl font-bold text-brand-textPrimary">$1.45M</p>
+                                    <p class="text-xs text-emerald-500 mt-1">+15% vs Current</p>
+                                </div>
+                                <div class="text-center border-l border-brand-tableBorder">
+                                    <p class="text-xs text-brand-textSecondary mb-1">Projected Margin</p>
+                                    <p class="text-2xl font-bold text-brand-primary">42.5%</p>
+                                    <p class="text-xs text-brand-critical mt-1">-1.2% vs Target</p>
+                                </div>
+                            </div>
+
+                            <div class="w-full bg-brand-border rounded-full h-2.5 mb-2">
+                                <div class="bg-brand-primary h-2.5 rounded-full" style="width: 42.5%"></div>
+                            </div>
+                            <div class="flex justify-between text-xs text-brand-textSecondary">
+                                <span>0%</span>
+                                <span>Target: 45%</span>
+                                <span>100%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 5: Recent Activity Timeline -->
+                <div id="recent-activity" class="bg-brand-cardBg rounded-xl border border-brand-border shadow-soft p-6 flex-1">
+                    <h2 class="text-base font-bold text-brand-textPrimary mb-4">Recent Activity</h2>
+                    
+                    <div class="relative border-l border-brand-border ml-3 space-y-6 pb-4">
+                        <div class="relative pl-6">
+                            <span class="absolute -left-1.5 top-1 w-3 h-3 rounded-full bg-brand-primary ring-4 ring-brand-cardBg"></span>
+                            <div class="flex justify-between items-start mb-1">
+                                <p class="text-sm font-medium text-brand-textPrimary">QBR Meeting Completed</p>
+                                <span class="text-xs text-brand-textSecondary">Oct 15, 2026</span>
+                            </div>
+                            <p class="text-sm text-brand-textSecondary">Discussed Q3 performance and Q4 expansion plans with Procurement team.</p>
+                        </div>
+                        
+                        <div class="relative pl-6">
+                            <span class="absolute -left-1.5 top-1 w-3 h-3 rounded-full bg-brand-lowSev ring-4 ring-brand-cardBg"></span>
+                            <div class="flex justify-between items-start mb-1">
+                                <p class="text-sm font-medium text-brand-textPrimary">Support Ticket #892 Resolved</p>
+                                <span class="text-xs text-brand-textSecondary">Oct 12, 2026</span>
+                            </div>
+                            <p class="text-sm text-brand-textSecondary">API integration issue resolved by technical support team.</p>
+                        </div>
+
+                        <div class="relative pl-6">
+                            <span class="absolute -left-1.5 top-1 w-3 h-3 rounded-full bg-emerald-500 ring-4 ring-brand-cardBg"></span>
+                            <div class="flex justify-between items-start mb-1">
+                                <p class="text-sm font-medium text-brand-textPrimary">Contract Upsell Signed</p>
+                                <span class="text-xs text-brand-textSecondary">Sep 28, 2026</span>
+                            </div>
+                            <p class="text-sm text-brand-textSecondary">Added 500 new user licenses for the Northeast region facilities.</p>
+                        </div>
+                    </div>
+                    <button class="w-full mt-2 py-2 text-sm text-brand-primary font-medium hover:bg-brand-bg rounded-md transition-colors">View All Activity</button>
+                </div>
+
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Global Footer -->
+    <footer id="global-footer" class="bg-brand-cardBg border-t border-brand-border mt-auto py-6 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-[1440px] mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-2 text-brand-textSecondary text-sm">
+                <i class="fa-solid fa-chart-pie text-brand-primary"></i>
+                <span>© 2026 PharmaBI Systems. All rights reserved.</span>
+            </div>
+            <div class="flex items-center gap-6 text-sm">
+                <a href="#" class="text-brand-textSecondary hover:text-brand-textPrimary transition-colors">Privacy Policy</a>
+                <a href="#" class="text-brand-textSecondary hover:text-brand-textPrimary transition-colors">Terms of Service</a>
+                <a href="#" class="text-brand-textSecondary hover:text-brand-textPrimary transition-colors">Support</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- External JS -->
+    <script src="data/mock-data.js"></script>
+    <script src="src/data-loader.js"></script>
+    <script src="src/charts.js"></script>
+    <script src="src/deep-dive.js"></script>
+</body>
+</html>

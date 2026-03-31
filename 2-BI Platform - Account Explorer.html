@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BI Platform - Account Explorer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script> window.FontAwesomeConfig = { autoReplaceSvg: 'nest'};</script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <script src="https://cdn.plot.ly/plotly-3.1.1.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            bg: '#EEE9DF',
+                            border: '#C9C1B1',
+                            textPrimary: '#2C3B4D',
+                            dark: '#1B2632',
+                            primary: '#FFB162',
+                            critical: '#A35139',
+                            textSecondary: '#4A6B8A',
+                            lowSev: '#7FA3C0',
+                            tableBorder: '#D8D0C4',
+                            cardBg: '#F7F4EF'
+                        },
+                        semantic: {
+                            emerald: '#10b981', // Growth
+                            amber: '#f59e0b',   // Opportunity
+                            rose: '#A35139',    // At-Risk (mapped to critical)
+                            violet: '#8b5cf6',  // Strategic
+                        }
+                    },
+                    boxShadow: {
+                        'soft': '0 4px 20px -2px rgba(0, 0, 0, 0.05)',
+                        'card': '0 2px 10px -2px rgba(0, 0, 0, 0.04)',
+                    }
+                }
+            }
+        }
+    </script>
+
+</head>
+<body class="w-full min-h-screen m-0 flex flex-col overflow-x-hidden text-brand-textPrimary bg-brand-bg">
+
+    <!-- Global Navigation Header -->
+    <header id="global-header" class="bg-brand-dark border-b border-brand-dark sticky top-0 z-50 h-16 flex items-center justify-between px-4 sm:px-6 lg:px-8 shadow-sm">
+        <div class="flex items-center gap-8">
+            <!-- Logo -->
+            <div class="flex items-center gap-2">
+                <div class="w-8 h-8 bg-brand-primary rounded-md flex items-center justify-center shadow-sm">
+                    <i class="fa-solid fa-chart-pie text-brand-dark text-sm"></i>
+                </div>
+                <span class="text-white text-xl font-bold tracking-tight">Account Segmentation</span>
+            </div>
+
+            <!-- Desktop Nav -->
+            <nav class="hidden md:flex items-center gap-1">
+                <a href="0-BI Platform - Executive Overvi.html" class="px-3 py-2 text-sm font-medium text-brand-textSecondary hover:text-white hover:bg-brand-dark/50 rounded-md transition-colors">Executive Overview</a>
+                <a href="1-BI Platform - Segmentation Eng.html" class="px-3 py-2 text-sm font-medium text-brand-textSecondary hover:text-white hover:bg-brand-dark/50 rounded-md transition-colors">Segmentation Engine</a>
+                <a href="2-BI Platform - Account Explorer.html" class="px-3 py-2 text-sm font-medium text-brand-primary bg-brand-primary/10 rounded-md">Account Explorer</a>
+                <a href="3-BI Platform - Account Deep-Div.html" class="px-3 py-2 text-sm font-medium text-brand-textSecondary hover:text-white hover:bg-brand-dark/50 rounded-md transition-colors">Account Deep-Dive</a>
+                <a href="4-BI Platform - Campaign Hub.html" class="px-3 py-2 text-sm font-medium text-brand-textSecondary hover:text-white hover:bg-brand-dark/50 rounded-md transition-colors">Campaign Hub</a>
+                <a href="5-BI Platform - Settings.html" class="px-3 py-2 text-sm font-medium text-brand-textSecondary hover:text-white hover:bg-brand-dark/50 rounded-md transition-colors">Settings</a>
+            </nav>
+        </div>
+
+        <div class="flex items-center gap-4">
+            <!-- Search -->
+            <div class="hidden lg:flex relative">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <i class="fa-solid fa-magnifying-glass text-brand-textSecondary text-sm"></i>
+                </div>
+                <input type="text" class="block w-64 pl-10 pr-3 py-1.5 border border-brand-border/30 rounded-full text-sm bg-brand-dark/50 text-white focus:bg-brand-dark focus:ring-1 focus:ring-brand-primary focus:border-brand-primary transition-colors shadow-inner placeholder-brand-textSecondary" placeholder="Search accounts, campaigns...">
+            </div>
+
+            <!-- Notifications -->
+            <button class="relative p-2 text-brand-textSecondary hover:text-white transition-colors rounded-full hover:bg-brand-dark/50">
+                <i class="fa-regular fa-bell"></i>
+                <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-brand-critical rounded-full border border-brand-dark"></span>
+            </button>
+
+            <!-- Profile (Removed image per request, kept text) -->
+            <div class="flex items-center gap-2 cursor-pointer pl-2 border-l border-brand-border/30">
+                <div class="hidden sm:block text-sm text-right">
+                    <p class="font-medium text-white leading-none">Dr. A. Carter</p>
+                    <p class="text-xs text-brand-textSecondary mt-1">SVP Sales</p>
+                </div>
+                <i class="fa-solid fa-chevron-down text-brand-textSecondary text-xs ml-1"></i>
+            </div>
+            
+            <!-- Mobile Menu Toggle -->
+            <button class="md:hidden p-2 text-brand-textSecondary hover:bg-brand-dark/50 rounded-md">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main id="main-content" class="flex-1 w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col relative">
+        
+        <!-- Workspace Header -->
+        <div id="workspace-header" class="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
+            <div>
+                <h1 class="text-2xl font-bold text-brand-textPrimary tracking-tight">Account Explorer</h1>
+                <p class="text-sm text-brand-textSecondary mt-1">Comprehensive view of all B2B accounts with semantic scoring.</p>
+            </div>
+            
+            <div class="flex flex-wrap items-center gap-3">
+                <button class="flex items-center gap-2 px-3 py-2 bg-brand-cardBg border border-brand-border rounded-lg shadow-sm text-sm font-medium text-brand-textPrimary hover:bg-brand-bg transition-colors">
+                    <i class="fa-solid fa-download text-brand-textSecondary"></i>
+                    Export CSV
+                </button>
+                
+                <button class="flex items-center gap-2 px-3 py-2 bg-brand-primary border border-transparent rounded-lg shadow-sm text-sm font-medium text-brand-dark hover:bg-brand-primary/90 transition-colors">
+                    <i class="fa-solid fa-plus"></i>
+                    New Account
+                </button>
+            </div>
+        </div>
+
+        <!-- Metrics Overview Cards -->
+        <div id="metrics-overview" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            <div class="bg-brand-cardBg p-5 rounded-xl border border-brand-border shadow-card flex flex-col justify-between">
+                <div class="flex items-center justify-between mb-2">
+                    <h3 class="text-sm font-medium text-brand-textSecondary">Total Accounts</h3>
+                    <div class="w-8 h-8 rounded-full bg-brand-bg flex items-center justify-center text-brand-textPrimary">
+                        <i class="fa-solid fa-building"></i>
+                    </div>
+                </div>
+                <div>
+                    <p class="text-2xl font-bold text-brand-textPrimary">1,248</p>
+                    <div class="flex items-center gap-1 mt-1 text-sm">
+                        <span class="text-semantic-emerald font-medium flex items-center gap-1"><i class="fa-solid fa-arrow-trend-up text-xs"></i> +12%</span>
+                        <span class="text-brand-textSecondary">vs last quarter</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-brand-cardBg p-5 rounded-xl border border-brand-border shadow-card flex flex-col justify-between">
+                <div class="flex items-center justify-between mb-2">
+                    <h3 class="text-sm font-medium text-brand-textSecondary">Growth Potential</h3>
+                    <div class="w-8 h-8 rounded-full bg-brand-primary/10 flex items-center justify-center text-brand-primary">
+                        <i class="fa-solid fa-dollar-sign"></i>
+                    </div>
+                </div>
+                <div>
+                    <p class="text-2xl font-bold text-brand-textPrimary">$342.5M</p>
+                    <div class="flex items-center gap-1 mt-1 text-sm">
+                        <span class="text-semantic-emerald font-medium flex items-center gap-1"><i class="fa-solid fa-arrow-trend-up text-xs"></i> +5.4%</span>
+                        <span class="text-brand-textSecondary">vs last quarter</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-brand-cardBg p-5 rounded-xl border border-brand-border shadow-card flex flex-col justify-between">
+                <div class="flex items-center justify-between mb-2">
+                    <h3 class="text-sm font-medium text-brand-textSecondary">Accounts At-Risk</h3>
+                    <div class="w-8 h-8 rounded-full bg-brand-critical/10 flex items-center justify-center text-brand-critical">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                    </div>
+                </div>
+                <div>
+                    <p class="text-2xl font-bold text-brand-textPrimary">86</p>
+                    <div class="flex items-center gap-1 mt-1 text-sm">
+                        <span class="text-brand-critical font-medium flex items-center gap-1"><i class="fa-solid fa-arrow-trend-up text-xs"></i> +2%</span>
+                        <span class="text-brand-textSecondary">vs last quarter</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-brand-cardBg p-5 rounded-xl border border-brand-border shadow-card flex flex-col justify-between">
+                <div class="flex items-center justify-between mb-2">
+                    <h3 class="text-sm font-medium text-brand-textSecondary">Avg. Health Score</h3>
+                    <div class="w-8 h-8 rounded-full bg-semantic-emerald/10 flex items-center justify-center text-semantic-emerald">
+                        <i class="fa-solid fa-heart-pulse"></i>
+                    </div>
+                </div>
+                <div>
+                    <p class="text-2xl font-bold text-brand-textPrimary">78/100</p>
+                    <div class="flex items-center gap-1 mt-1 text-sm">
+                        <span class="text-brand-textSecondary font-medium flex items-center gap-1"><i class="fa-solid fa-minus text-xs"></i> 0%</span>
+                        <span class="text-brand-textSecondary">vs last quarter</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Area: Table + Drawer Layout -->
+        <div class="flex-1 flex gap-6 h-[calc(100vh-320px)] min-h-[600px]">
+            
+            <!-- Left Side: Smart Table -->
+            <div id="table-section" class="flex-1 bg-brand-cardBg rounded-xl border border-brand-border shadow-soft flex flex-col overflow-hidden transition-all duration-300">
+                
+                <!-- Table Toolbar -->
+                <div class="p-4 border-b border-brand-tableBorder flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-brand-bg/50">
+                    
+                    <!-- Filters -->
+                    <div class="flex flex-wrap items-center gap-2">
+                        <div class="relative">
+                            <i class="fa-solid fa-filter absolute left-3 top-1/2 -translate-y-1/2 text-brand-textSecondary text-xs"></i>
+                            <select class="pl-8 pr-8 py-1.5 text-sm border border-brand-border rounded-md bg-brand-cardBg text-brand-textPrimary focus:ring-1 focus:ring-brand-primary focus:border-brand-primary shadow-sm appearance-none cursor-pointer">
+                                <option>All Segments</option>
+                                <option>Hospitals</option>
+                                <option>Pharmacy Chains</option>
+                                <option>Distributors</option>
+                            </select>
+                            <i class="fa-solid fa-chevron-down absolute right-3 top-1/2 -translate-y-1/2 text-brand-textSecondary text-xs pointer-events-none"></i>
+                        </div>
+
+                        <div class="relative">
+                            <select class="pl-3 pr-8 py-1.5 text-sm border border-brand-border rounded-md bg-brand-cardBg text-brand-textPrimary focus:ring-1 focus:ring-brand-primary focus:border-brand-primary shadow-sm appearance-none cursor-pointer">
+                                <option>Score: All</option>
+                                <option>Growth (Emerald)</option>
+                                <option>Opportunity (Amber)</option>
+                                <option>At-Risk (Rose)</option>
+                                <option>Strategic (Violet)</option>
+                            </select>
+                            <i class="fa-solid fa-chevron-down absolute right-3 top-1/2 -translate-y-1/2 text-brand-textSecondary text-xs pointer-events-none"></i>
+                        </div>
+                        
+                        <div class="relative">
+                            <select class="pl-3 pr-8 py-1.5 text-sm border border-brand-border rounded-md bg-brand-cardBg text-brand-textPrimary focus:ring-1 focus:ring-brand-primary focus:border-brand-primary shadow-sm appearance-none cursor-pointer">
+                                <option>Owner: All</option>
+                                <option>Sarah Jenkins</option>
+                                <option>Marcus Thorne</option>
+                                <option>Elena Rodriguez</option>
+                            </select>
+                            <i class="fa-solid fa-chevron-down absolute right-3 top-1/2 -translate-y-1/2 text-brand-textSecondary text-xs pointer-events-none"></i>
+                        </div>
+
+                        <div class="relative">
+                            <select class="pl-3 pr-8 py-1.5 text-sm border border-brand-border rounded-md bg-brand-cardBg text-brand-textPrimary focus:ring-1 focus:ring-brand-primary focus:border-brand-primary shadow-sm appearance-none cursor-pointer">
+                                <option>Region: All</option>
+                                <option>North America</option>
+                                <option>EMEA</option>
+                                <option>APAC</option>
+                            </select>
+                            <i class="fa-solid fa-chevron-down absolute right-3 top-1/2 -translate-y-1/2 text-brand-textSecondary text-xs pointer-events-none"></i>
+                        </div>
+                        
+                        <button class="px-3 py-1.5 text-sm text-brand-primary hover:text-brand-primary/80 font-medium transition-colors">Clear Filters</button>
+                    </div>
+
+                    <!-- Search & Columns Config -->
+                    <div class="flex items-center gap-3">
+                        <div class="relative">
+                            <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-brand-textSecondary text-sm"></i>
+                            <input type="text" placeholder="Search in table..." class="pl-9 pr-3 py-1.5 w-48 text-sm border border-brand-border rounded-md bg-brand-cardBg focus:ring-1 focus:ring-brand-primary focus:border-brand-primary shadow-sm transition-all focus:w-64 text-brand-textPrimary placeholder-brand-textSecondary">
+                        </div>
+                        <button class="p-1.5 border border-brand-border rounded-md bg-brand-cardBg text-brand-textSecondary hover:text-brand-textPrimary hover:bg-brand-bg shadow-sm transition-colors" title="Configure Columns">
+                            <i class="fa-solid fa-table-columns"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Table Container -->
+                <div class="flex-1 overflow-auto table-container relative bg-brand-cardBg">
+                    <table class="w-full text-left border-collapse min-w-[1000px]">
+                        <thead class="sticky-header text-xs text-brand-textSecondary uppercase tracking-wider bg-brand-cardBg border-b border-brand-tableBorder">
+                            <tr>
+                                <th class="px-4 py-3 font-semibold w-10"></th>
+                                <th class="px-4 py-3 font-semibold cursor-pointer hover:text-brand-textPrimary group">Account Name <i class="fa-solid fa-arrow-down-a-z ml-1 text-brand-border group-hover:text-brand-textSecondary"></i></th>
+                                <th class="px-4 py-3 font-semibold cursor-pointer hover:text-brand-textPrimary">Segment</th>
+                                <th class="px-4 py-3 font-semibold cursor-pointer hover:text-brand-textPrimary">Status Score</th>
+                                <th class="px-4 py-3 font-semibold cursor-pointer hover:text-brand-textPrimary">ARR</th>
+                                <th class="px-4 py-3 font-semibold cursor-pointer hover:text-brand-textPrimary">Owner</th>
+                                <th class="px-4 py-3 font-semibold cursor-pointer hover:text-brand-textPrimary">Last Activity</th>
+                                <th class="px-4 py-3 font-semibold text-right w-16">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-brand-tableBorder text-sm">
+                            
+                            <!-- Row 1: Active/Selected State -->
+                            <tr class="hover:bg-brand-primary/5 transition-colors cursor-pointer bg-brand-primary/10 border-l-4 border-l-brand-primary">
+                                <td class="px-4 py-4 text-center text-brand-textSecondary hover:text-brand-primary transition-colors">
+                                    <button><i class="fa-solid fa-chevron-right text-xs"></i></button>
+                                </td>
+                                <td class="px-4 py-4">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-8 h-8 rounded bg-brand-dark text-white flex items-center justify-center font-bold text-xs">MC</div>
+                                        <div>
+                                            <p class="font-medium text-brand-textPrimary">Mercy Care Network</p>
+                                            <p class="text-xs text-brand-textSecondary">ID: ACC-8921</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-4 text-brand-textSecondary">Hospital Chain</td>
+                                <td class="px-4 py-4">
+                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-semantic-emerald/10 text-semantic-emerald border border-semantic-emerald/20">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-semantic-emerald"></span> Growth
+                                    </span>
+                                </td>
+                                <td class="px-4 py-4 font-medium text-brand-textPrimary">$1.2M</td>
+                                <td class="px-4 py-4 text-brand-textSecondary">Sarah Jenkins</td>
+                                <td class="px-4 py-4 text-brand-textSecondary text-xs">2 days ago</td>
+                                <td class="px-4 py-4 text-right">
+                                    <button class="text-brand-textSecondary hover:text-brand-primary p-1"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+                                </td>
+                            </tr>
+
+                            <!-- Row 2: Expanded State -->
+                            <tr class="hover:bg-brand-bg transition-colors cursor-pointer expanded border-l-4 border-l-transparent">
+                                <td class="px-4 py-4 text-center text-brand-primary transition-colors">
+                                    <button><i class="fa-solid fa-chevron-down text-xs"></i></button>
+                                </td>
+                                <td class="px-4 py-4">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-8 h-8 rounded bg-brand-critical/10 text-brand-critical flex items-center justify-center font-bold text-xs">PH</div>
+                                        <div>
+                                            <p class="font-medium text-brand-textPrimary">Pinnacle Health</p>
+                                            <p class="text-xs text-brand-textSecondary">ID: ACC-7742</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-4 text-brand-textSecondary">Hospital Chain</td>
+                                <td class="px-4 py-4">
+                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-brand-critical/10 text-brand-critical border border-brand-critical/20">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-brand-critical"></span> At-Risk
+                                    </span>
+                                </td>
+                                <td class="px-4 py-4 font-medium text-brand-textPrimary">$850K</td>
+                                <td class="px-4 py-4 text-brand-textSecondary">Marcus Thorne</td>
+                                <td class="px-4 py-4 text-brand-textSecondary text-xs">5 hours ago</td>
+                                <td class="px-4 py-4 text-right">
+                                    <button class="text-brand-textSecondary hover:text-brand-primary p-1"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+                                </td>
+                            </tr>
+                            <!-- Expanded Content for Row 2 -->
+                            <tr class="bg-brand-bg/50">
+                                <td colspan="8" class="p-0 border-b border-brand-tableBorder">
+                                    <div class="expandable-row-content px-12">
+                                        <div class="grid grid-cols-3 gap-6">
+                                            <div class="bg-brand-cardBg p-4 rounded-lg border border-brand-border shadow-sm">
+                                                <h4 class="text-xs font-semibold text-brand-textSecondary uppercase mb-2">Risk Factors</h4>
+                                                <ul class="space-y-2 text-sm text-brand-textPrimary">
+                                                    <li class="flex items-start gap-2"><i class="fa-solid fa-triangle-exclamation text-brand-critical mt-0.5"></i> Contract expires in 45 days</li>
+                                                    <li class="flex items-start gap-2"><i class="fa-solid fa-arrow-trend-down text-brand-critical mt-0.5"></i> 30% drop in platform usage</li>
+                                                </ul>
+                                            </div>
+                                            <div class="bg-brand-cardBg p-4 rounded-lg border border-brand-border shadow-sm">
+                                                <h4 class="text-xs font-semibold text-brand-textSecondary uppercase mb-2">Recent Engagement</h4>
+                                                <ul class="space-y-2 text-sm text-brand-textPrimary">
+                                                    <li class="flex items-start gap-2"><i class="fa-regular fa-envelope text-brand-textSecondary mt-0.5"></i> Sent renewal proposal (Oct 12)</li>
+                                                    <li class="flex items-start gap-2"><i class="fa-solid fa-phone text-brand-textSecondary mt-0.5"></i> Call with Procurement (Oct 10)</li>
+                                                </ul>
+                                            </div>
+                                            <div class="bg-brand-cardBg p-4 rounded-lg border border-brand-border shadow-sm flex flex-col justify-center items-center text-center">
+                                                <h4 class="text-xs font-semibold text-brand-textSecondary uppercase mb-2">Recommended Action</h4>
+                                                <button class="px-4 py-2 bg-brand-critical/10 text-brand-critical border border-brand-critical/20 rounded-md text-sm font-medium hover:bg-brand-critical/20 transition-colors w-full">
+                                                    Schedule Executive Review
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <!-- Row 3 -->
+                            <tr class="hover:bg-brand-bg transition-colors cursor-pointer border-l-4 border-l-transparent">
+                                <td class="px-4 py-4 text-center text-brand-textSecondary hover:text-brand-primary transition-colors">
+                                    <button><i class="fa-solid fa-chevron-right text-xs"></i></button>
+                                </td>
+                                <td class="px-4 py-4">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-8 h-8 rounded bg-semantic-amber/10 text-semantic-amber flex items-center justify-center font-bold text-xs">CV</div>
+                                        <div>
+                                            <p class="font-medium text-brand-textPrimary">CVS Health Network</p>
+                                            <p class="text-xs text-brand-textSecondary">ID: ACC-5519</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-4 text-brand-textSecondary">Pharmacy Chain</td>
+                                <td class="px-4 py-4">
+                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-semantic-amber/10 text-semantic-amber border border-semantic-amber/20">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-semantic-amber"></span> Opportunity
+                                    </span>
+                                </td>
+                                <td class="px-4 py-4 font-medium text-brand-textPrimary">$2.4M</td>
+                                <td class="px-4 py-4 text-brand-textSecondary">Elena Rodriguez</td>
+                                <td class="px-4 py-4 text-brand-textSecondary text-xs">1 week ago</td>
+                                <td class="px-4 py-4 text-right">
+                                    <button class="text-brand-textSecondary hover:text-brand-primary p-1"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+                                </td>
+                            </tr>
+
+                            <!-- Row 4 -->
+                            <tr class="hover:bg-brand-bg transition-colors cursor-pointer border-l-4 border-l-transparent">
+                                <td class="px-4 py-4 text-center text-brand-textSecondary hover:text-brand-primary transition-colors">
+                                    <button><i class="fa-solid fa-chevron-right text-xs"></i></button>
+                                </td>
+                                <td class="px-4 py-4">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-8 h-8 rounded bg-semantic-violet/10 text-semantic-violet flex items-center justify-center font-bold text-xs">NM</div>
+                                        <div>
+                                            <p class="font-medium text-brand-textPrimary">National MedSupply</p>
+                                            <p class="text-xs text-brand-textSecondary">ID: ACC-2284</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-4 text-brand-textSecondary">Distributor</td>
+                                <td class="px-4 py-4">
+                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-semantic-violet/10 text-semantic-violet border border-semantic-violet/20">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-semantic-violet"></span> Strategic
+                                    </span>
+                                </td>
+                                <td class="px-4 py-4 font-medium text-brand-textPrimary">$5.1M</td>
+                                <td class="px-4 py-4 text-brand-textSecondary">Sarah Jenkins</td>
+                                <td class="px-4 py-4 text-brand-textSecondary text-xs">Yesterday</td>
+                                <td class="px-4 py-4 text-right">
+                                    <button class="text-brand-textSecondary hover:text-brand-primary p-1"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+                                </td>
+                            </tr>
+                            
+                             <!-- Row 5 -->
+                             <tr class="hover:bg-brand-bg transition-colors cursor-pointer border-l-4 border-l-transparent">
+                                <td class="px-4 py-4 text-center text-brand-textSecondary hover:text-brand-primary transition-colors">
+                                    <button><i class="fa-solid fa-chevron-right text-xs"></i></button>
+                                </td>
+                                <td class="px-4 py-4">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-8 h-8 rounded bg-semantic-emerald/10 text-semantic-emerald flex items-center justify-center font-bold text-xs">WG</div>
+                                        <div>
+                                            <p class="font-medium text-brand-textPrimary">Walgreens Corp</p>
+                                            <p class="text-xs text-brand-textSecondary">ID: ACC-1193</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-4 text-brand-textSecondary">Pharmacy Chain</td>
+                                <td class="px-4 py-4">
+                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-semantic-emerald/10 text-semantic-emerald border border-semantic-emerald/20">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-semantic-emerald"></span> Growth
+                                    </span>
+                                </td>
+                                <td class="px-4 py-4 font-medium text-brand-textPrimary">$3.8M</td>
+                                <td class="px-4 py-4 text-brand-textSecondary">Marcus Thorne</td>
+                                <td class="px-4 py-4 text-brand-textSecondary text-xs">3 days ago</td>
+                                <td class="px-4 py-4 text-right">
+                                    <button class="text-brand-textSecondary hover:text-brand-primary p-1"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Pagination -->
+                <div class="p-4 border-t border-brand-tableBorder flex items-center justify-between bg-brand-cardBg">
+                    <p class="text-sm text-brand-textSecondary">Showing <span class="font-medium text-brand-textPrimary">1</span> to <span class="font-medium text-brand-textPrimary">5</span> of <span class="font-medium text-brand-textPrimary">1,248</span> results</p>
+                    <div class="flex items-center gap-2">
+                        <button class="px-3 py-1.5 border border-brand-border rounded-md text-sm text-brand-textSecondary hover:bg-brand-bg disabled:opacity-50 disabled:cursor-not-allowed" disabled>Previous</button>
+                        <button class="px-3 py-1.5 border border-brand-border rounded-md text-sm text-brand-textSecondary hover:bg-brand-bg">Next</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Side: Details Preview Drawer (Active State for Mercy Care Network) -->
+            <div id="details-drawer" class="w-96 bg-brand-cardBg rounded-xl border border-brand-border shadow-soft flex flex-col overflow-hidden hidden lg:flex shrink-0">
+                <!-- Drawer Header -->
+                <div class="p-5 border-b border-brand-tableBorder flex items-start justify-between bg-brand-bg/50">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-lg bg-brand-dark text-white flex items-center justify-center font-bold text-lg shadow-sm">MC</div>
+                        <div>
+                            <h2 class="text-lg font-bold text-brand-textPrimary leading-tight">Mercy Care Network</h2>
+                            <p class="text-sm text-brand-textSecondary">Hospital Chain • North America</p>
+                        </div>
+                    </div>
+                    <button class="text-brand-textSecondary hover:text-brand-textPrimary transition-colors p-1 rounded-md hover:bg-brand-bg">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+
+                <!-- Drawer Content -->
+                <div class="flex-1 overflow-y-auto p-5 space-y-6">
+                    
+                    <!-- Quick Stats -->
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="p-3 bg-brand-bg rounded-lg border border-brand-border/50">
+                            <p class="text-xs text-brand-textSecondary font-medium mb-1">Status Score</p>
+                            <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-medium bg-semantic-emerald/10 text-semantic-emerald border border-semantic-emerald/20">
+                                <span class="w-1.5 h-1.5 rounded-full bg-semantic-emerald"></span> Growth (85/100)
+                            </span>
+                        </div>
+                        <div class="p-3 bg-brand-bg rounded-lg border border-brand-border/50">
+                            <p class="text-xs text-brand-textSecondary font-medium mb-1">Annual Revenue</p>
+                            <p class="text-sm font-bold text-brand-textPrimary">$1.2M</p>
+                        </div>
+                    </div>
+
+                    <!-- AI Narrative Insight -->
+                    <div>
+                        <h3 class="text-xs font-bold text-brand-textSecondary uppercase tracking-wider mb-3 flex items-center gap-2">
+                            <i class="fa-solid fa-wand-magic-sparkles text-brand-primary"></i> AI Insight
+                        </h3>
+                        <div class="bg-brand-primary/10 p-4 rounded-lg border border-brand-primary/20 text-sm text-brand-textPrimary leading-relaxed">
+                            <p>Strong expansion potential detected. Platform utilization increased by 15% in Q3. Recommendation: Initiate cross-sell campaign for new Cardiovascular device line before FY budgeting cycle begins in November.</p>
+                        </div>
+                    </div>
+
+                    <div class="h-px bg-brand-tableBorder"></div>
+
+                    <!-- Usage Trend Chart Mini -->
+                    <div>
+                        <h3 class="text-xs font-bold text-brand-textSecondary uppercase tracking-wider mb-3">Platform Usage Trend (30 Days)</h3>
+                        <div class="h-32 w-full bg-brand-bg rounded-lg border border-brand-border/50 flex items-center justify-center p-2">
+                            <div id="mini-trend-chart" class="w-full h-full"></div>
+                        </div>
+                    </div>
+
+                    <div class="h-px bg-brand-tableBorder"></div>
+
+                    <!-- Key Contacts (Removed images per request, kept text layout) -->
+                    <div>
+                        <h3 class="text-xs font-bold text-brand-textSecondary uppercase tracking-wider mb-3">Key Contacts</h3>
+                        <div class="space-y-3">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-full border border-brand-border bg-brand-bg flex items-center justify-center text-brand-textSecondary text-xs font-medium">AH</div>
+                                <div>
+                                    <p class="text-sm font-medium text-brand-textPrimary leading-none">Amanda Higgins</p>
+                                    <p class="text-xs text-brand-textSecondary mt-0.5">Chief Procurement Officer</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-full border border-brand-border bg-brand-bg flex items-center justify-center text-brand-textSecondary text-xs font-medium">RC</div>
+                                <div>
+                                    <p class="text-sm font-medium text-brand-textPrimary leading-none">Dr. Robert Chen</p>
+                                    <p class="text-xs text-brand-textSecondary mt-0.5">Head of Cardiology</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Drawer Footer -->
+                <div class="p-5 border-t border-brand-tableBorder bg-brand-cardBg">
+                    <a href="3-BI Platform - Account Deep-Div.html" class="w-full py-2.5 bg-brand-primary text-brand-dark rounded-lg text-sm font-medium hover:bg-brand-primary/90 transition-colors shadow-sm flex items-center justify-center gap-2">
+                        View Deep-Dive <i class="fa-solid fa-arrow-right text-xs"></i>
+                    </a>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- Global Footer -->
+    <footer id="global-footer" class="bg-brand-cardBg border-t border-brand-border mt-auto py-6 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-[1440px] mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-2 text-brand-textSecondary text-sm">
+                <i class="fa-solid fa-chart-pie text-brand-primary"></i>
+                <span>© 2026 PharmaBI Systems. All rights reserved.</span>
+            </div>
+            <div class="flex items-center gap-6 text-sm">
+                <a href="#" class="text-brand-textSecondary hover:text-brand-textPrimary transition-colors">Privacy Policy</a>
+                <a href="#" class="text-brand-textSecondary hover:text-brand-textPrimary transition-colors">Terms of Service</a>
+                <a href="#" class="text-brand-textSecondary hover:text-brand-textPrimary transition-colors">Support</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Plotly Charts Scripts -->
+    <!-- External JS -->
+    <script src="data/mock-data.js"></script>
+    <script src="src/data-loader.js"></script>
+    <script src="src/charts.js"></script>
+    <script src="src/account-explorer.js"></script>
+</body>
+</html>
